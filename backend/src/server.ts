@@ -50,7 +50,7 @@ app.get('/test-cookies', (req, res) => {
 
 // // Use Google OAuth middleware and routes
 app.use(googleMiddleware);
-app.use(googleRoute);
+app.use('/auth', googleRoute);
 
 
 // // Use twitter OAuth middleware and routes
