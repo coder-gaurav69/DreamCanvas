@@ -69,10 +69,10 @@ app.post('/validate',validate,(req:Request,res:Response)=>{
 })
 
 // 404 fallback
-app.get('*', (req: Request, res: Response) => {
-    console.log('site not found');
-    res.status(404).send('Site not found');
-});
+// app.get('*', (req: Request, res: Response) => {
+//     console.log('site not found');
+//     res.status(404).send('Site not found');
+// });
 
 // Connect MongoDB
 MongoDB(MONGODB_URL);
