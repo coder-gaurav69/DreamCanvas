@@ -104,7 +104,12 @@ const registerController = async (req: Request, res: Response) => {
       loginType: "Email",
     };
 
-    res.cookie("user", user);
+    res.cookie("user", user, {
+      httpOnly: true,
+      secure: true, // only send cookie over HTTPS
+      sameSite: "none", // allow cross-site cookie
+      maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+    });
 
     res.status(201).json({
       message: "User registered successfully",
@@ -132,7 +137,10 @@ const logoutController = async (req: Request, res: Response): Promise<void> => {
   }
 
   // Clear cookie
-  res.clearCookie("user");
+  res.clearCookie("user",{
+    secure: true,
+    sameSite: 'none', 
+  });
 
   console.log("Logout successfully");
 
