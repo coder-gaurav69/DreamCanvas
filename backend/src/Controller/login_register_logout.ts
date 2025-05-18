@@ -38,12 +38,14 @@ const loginController = async (req: Request, res: Response) => {
 
     console.log("User logged in successfully");
 
-    res.cookie("user", user, {
-      httpOnly: true,
-      secure: true, // only send cookie over HTTPS
-      sameSite: "none", // allow cross-site cookie
-      maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-    });
+    res.cookie("user", user, 
+      {
+        httpOnly: true,
+        secure: true, // only send cookie over HTTPS
+        sameSite: "none", // allow cross-site cookie
+        maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+      }
+  );
 
     res.status(200).json({
       message: "User logged in successfully",
@@ -104,12 +106,14 @@ const registerController = async (req: Request, res: Response) => {
       loginType: "Email",
     };
 
-    res.cookie("user", user, {
-      httpOnly: true,
-      secure: true, // only send cookie over HTTPS
-      sameSite: "none", // allow cross-site cookie
-      maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-    });
+    res.cookie("user", user, 
+      {
+        httpOnly: true,
+        secure: true, // only send cookie over HTTPS
+        sameSite: "none", // allow cross-site cookie
+        maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+      }
+  );
 
     res.status(201).json({
       message: "User registered successfully",
@@ -130,16 +134,18 @@ const logoutController = async (req: Request, res: Response): Promise<void> => {
 
   if (!usercookie) {
     res.status(400).json({
-      message: "login first",
+      message: "Login first",
       success: false,
     });
     return;
   }
 
-  // Clear cookie
-  res.clearCookie("user",{
+  // Clear the cookie (match the cookie options used during set)
+  res.clearCookie("user", {
+    httpOnly: true,
     secure: true,
-    sameSite: 'none', 
+    sameSite: 'none',
+    path: "/", // should match the path used when setting the cookie
   });
 
   console.log("Logout successfully");
@@ -149,5 +155,6 @@ const logoutController = async (req: Request, res: Response): Promise<void> => {
     success: true,
   });
 };
+
 
 export { loginController, registerController, logoutController };

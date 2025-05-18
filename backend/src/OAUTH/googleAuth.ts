@@ -75,12 +75,14 @@ googleRoute.get(
 
     const user = { accessToken, refreshToken, id, folderName, loginType: 'Google' };
 
-    res.cookie("user", user, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      maxAge: 24 * 60 * 60 * 1000,
-    });
+    res.cookie("user", user, 
+      {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+        maxAge: 24 * 60 * 60 * 1000,
+      }
+  );
 
     res.redirect(`${FRONTEND_URL}`);
   }
