@@ -25,10 +25,14 @@ const loginMiddleware = async (
     return;
   }
 
+  console.log(email, password);
+
   try {
     const user:any = await userModel
       .findOne({ email })
       .select("-userName -generatedImages -createdAt");
+    
+    console.log()
 
     if (!user) {
       res.status(400).json({

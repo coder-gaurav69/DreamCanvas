@@ -38,7 +38,12 @@ const loginController = async (req: Request, res: Response) => {
 
     console.log("User logged in successfully");
 
-    res.cookie("user", user);
+    res.cookie("user", user, {
+      httpOnly: true,
+      secure: true, // only send cookie over HTTPS
+      sameSite: "none", // allow cross-site cookie
+      maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+    });
 
     res.status(200).json({
       message: "User logged in successfully",
@@ -135,7 +140,6 @@ const logoutController = async (req: Request, res: Response): Promise<void> => {
     message: "Logout successfully",
     success: true,
   });
-
 };
 
 export { loginController, registerController, logoutController };

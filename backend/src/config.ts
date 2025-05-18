@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const PORT: number = parseInt(process.env.PORT || '3000');
-const FRONTEND_URL: string = process.env.FRONTEND_URL || "http://localhost:3000";
+const FRONTEND_URL: string = process.env.FRONTEND_URL || "http://localhost:5173";
 const MONGODB_URL: string = process.env.MONGODB_URL || '';
 const JWT_SECRET_KEY_ACCESSTOKEN: string = process.env.JWT_SECRET_KEY_ACCESSTOKEN || '';
 const JWT_SECRET_KEY_REFRESHTOKEN: string = process.env.JWT_SECRET_KEY_REFRESHTOKEN || '';

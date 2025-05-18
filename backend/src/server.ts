@@ -22,9 +22,12 @@ app.use(cookieParser());
 
 app.use(cors({
     origin: `${FRONTEND_URL}`,
+    // origin:'*',
     credentials: true,
     methods: ['GET', 'POST', 'DELETE']
 }));
+
+
 
 // Health check route
 app.get('/', (req: Request, res: Response) => {
@@ -46,6 +49,7 @@ app.get('/test-cookies', (req, res) => {
     success:true,
   });
 });
+
 
 
 // // Use Google OAuth middleware and routes
