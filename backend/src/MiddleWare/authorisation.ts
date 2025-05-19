@@ -112,8 +112,10 @@ const validate = async (req: Request, res: Response, next: NextFunction):Promise
     });
   }
 
-  if (loginType == "Google") {
+  // console.log("google request ayi");
 
+  if (loginType == "Google") {
+    // console.log('yes google hoon mai')
     console.log('Logged in from Google');
     googleValidate(accessToken,refreshToken,id,folderName)
     console.log('working fine google')

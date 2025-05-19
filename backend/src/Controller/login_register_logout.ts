@@ -141,12 +141,14 @@ const logoutController = async (req: Request, res: Response): Promise<void> => {
   }
 
   // Clear the cookie (match the cookie options used during set)
-  res.clearCookie("user", {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'none',
-    path: "/", // should match the path used when setting the cookie
-  });
+  res.clearCookie("user",
+    {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      path: "/", // should match the path used when setting the cookie
+    }
+);
 
   console.log("Logout successfully");
 

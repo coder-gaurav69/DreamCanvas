@@ -82,15 +82,11 @@ googleRoute.get(
         sameSite: 'none',
         maxAge: 24 * 60 * 60 * 1000,
       }
-  );
-
+    );
+    console.log("loginSuccessfully with google")
     res.redirect(`${FRONTEND_URL}`);
   }
 );
-
-googleRoute.get("/profile", (req: Request, res: Response) => {
-  res.json(req.user);
-});
 
 // =================== Access Token Validator ===================
 const googleValidate = async (
