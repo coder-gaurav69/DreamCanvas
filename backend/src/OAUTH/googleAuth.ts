@@ -26,15 +26,16 @@ passport.use(
       const email = profile?.emails?.[0]?.value;
       const existingUser = await userModel.findOne({ email });
 
-      const user = {
-        profile,
-        accessToken,
-        refreshToken,
-        folderName: email,
-        id: existingUser?._id,
-      };
-
-      if (existingUser) return done(null, user);
+      if (existingUser) {
+        const user = {
+          profile,
+          accessToken,
+          refreshToken,
+          folderName: email,
+          id: existingUser?._id,
+        };
+        return done(null, user);
+      }
 
       const newUser = new userModel({
         userName: profile.displayName,
@@ -44,6 +45,15 @@ passport.use(
       });
 
       await newUser.save();
+
+      const user = {
+          profile,
+          accessToken,
+          refreshToken,
+          folderName: email,
+          id: newUser?._id,
+      };
+
       return done(null, user);
     }
   )
@@ -56,34 +66,39 @@ googleMiddleware.use(passport.initialize());
 
 // =================== Routes ===================
 googleRoute.get(
-  '/google',
-  passport.authenticate('google', {
-    scope: ['profile', 'email'],
-    accessType: 'offline',
-    prompt: 'consent',
+  "/google",
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    accessType: "offline",
+    prompt: "consent",
   })
 );
 
 googleRoute.get(
-  '/google/callback',
-  passport.authenticate('google', {
-    failureRedirect: '/login',
+  "/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: "/login",
     session: false,
   }),
   (req: Request, res: Response) => {
-    const { accessToken, refreshToken, profile, id, folderName } = req.user as any;
+    const { accessToken, refreshToken, profile, id, folderName } =
+      req.user as any;
 
-    const user = { accessToken, refreshToken, id, folderName, loginType: 'Google' };
+    const user = {
+      accessToken,
+      refreshToken,
+      id,
+      folderName,
+      loginType: "Google",
+    };
 
-    res.cookie("user", user, 
-      {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-        maxAge: 24 * 60 * 60 * 1000,
-      }
-    );
-    console.log("loginSuccessfully with google")
+    res.cookie("user", user, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+    console.log("loginSuccessfully with google");
     res.redirect(`${FRONTEND_URL}`);
   }
 );
@@ -123,7 +138,9 @@ const googleValidate = async (
         console.log("Access token refreshed:", newAccessToken);
         return newAccessToken;
       } catch (refreshError: any) {
-        throw new Error("Failed to refresh access token: " + refreshError.message);
+        throw new Error(
+          "Failed to refresh access token: " + refreshError.message
+        );
       }
     } else {
       throw new Error("Invalid access token");
