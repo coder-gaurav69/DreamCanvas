@@ -89,7 +89,16 @@ const Login = () => {
     window.open(url, "_self");
   };
   
-  const handle0AuthTwitterLogin = async (): Promise<void> => {
+  const handle0AuthFacebookLogin = async (): Promise<void> => {
+    const url = `${import.meta.env.VITE_BACKEND_URL}/auth/facebook`;
+    window.open(url, "_self");
+  };
+
+  // const handle0AuthGithubLogin = async (): Promise<void> => {
+  //   const url = `${import.meta.env.VITE_BACKEND_URL}/auth/github`;
+  //   window.open(url, "_self");
+  // };
+  const handle0AuthGithubLogin = async (): Promise<void> => {
     const url = `${import.meta.env.VITE_BACKEND_URL}/auth/twitter`;
     window.open(url, "_self");
   };
@@ -177,10 +186,10 @@ const Login = () => {
             <div className="shadow-[0_0_0_0.5px_rgba(255,255,255,0.2)] flex items-center justify-center rounded-lg py-2 hover:bg-[rgba(255,255,255,0.05)]" onClick={handle0AuthGoogleLogin}>
               <FcGoogle />
             </div>
-            <div className="shadow-[0_0_0_0.5px_rgba(255,255,255,0.2)] flex items-center justify-center rounded-lg py-2 hover:bg-[rgba(255,255,255,0.05)]" onClick={handle0AuthTwitterLogin}>
+            <div className="shadow-[0_0_0_0.5px_rgba(255,255,255,0.2)] flex items-center justify-center rounded-lg py-2 hover:bg-[rgba(255,255,255,0.05)]" onClick={handle0AuthFacebookLogin}>
               <FaFacebook className="text-[#2563EB]" />
             </div>
-            <div className="shadow-[0_0_0_0.5px_rgba(255,255,255,0.2)] flex items-center justify-center rounded-lg py-2 hover:bg-[rgba(255,255,255,0.05)]">
+            <div className="shadow-[0_0_0_0.5px_rgba(255,255,255,0.2)] flex items-center justify-center rounded-lg py-2 hover:bg-[rgba(255,255,255,0.05)]" onClick={handle0AuthGithubLogin}>
               <FaMicrosoft className="text-[#00A4EF]" />
             </div>
           </div>

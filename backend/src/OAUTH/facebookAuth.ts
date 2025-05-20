@@ -1,29 +1,31 @@
 import express, { Router, Request, Response } from "express";
 import passport from "passport";
-import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import { Strategy as FacebookStrategy } from "passport-facebook";
 import cookieParser from "cookie-parser";
-import axios from "axios";
-import { generateToken } from "../utils/tokenGeneration.js";
 import {
-  GOOGLE_CLIENT_ID,
-  GOOGLE_CLIENT_SECRET,
-  GOOGLE_CALLBACK_URL,
+  FACEBOOK_APP_ID,
+  FACEBOOK_APP_SECRET,
+  FACEBOOK_CALLBACK_URL,
   FRONTEND_URL,
 } from "../config.js";
 import userModel from "../Schema/userSchema.js";
+import axios from "axios";
+import { generateToken } from "../utils/tokenGeneration.js";
 
-const googleRoute: Router = express.Router();
+const facebookRoute: Router = express.Router();
 
 // =================== Passport Config ===================
 passport.use(
-  new GoogleStrategy(
+  new FacebookStrategy(
     {
-      clientID: GOOGLE_CLIENT_ID!,
-      clientSecret: GOOGLE_CLIENT_SECRET!,
-      callbackURL: GOOGLE_CALLBACK_URL!,
+      clientID: FACEBOOK_APP_ID!,
+      clientSecret: FACEBOOK_APP_SECRET!,
+      callbackURL: FACEBOOK_CALLBACK_URL!,
+      profileFields: ["id", "emails", "name", "displayName", "photos"],
       passReqToCallback: true,
     },
     async (req, accessToken, refreshToken, profile, done) => {
+
       const email = profile?.emails?.[0]?.value;
       const existingUser = await userModel.findOne({ email });
 
@@ -42,7 +44,7 @@ passport.use(
           myRefreshToken,
           folderName: email,
           id: existingUser?._id,
-          loginType:"Google"
+          loginType:"Facebook"
         };
         return done(null, user);
       }
@@ -76,23 +78,21 @@ passport.use(
 );
 
 // =================== Middleware App ===================
-const googleMiddleware = express();
-googleMiddleware.use(cookieParser());
-googleMiddleware.use(passport.initialize());
+const facebookMiddleware = express();
+facebookMiddleware.use(cookieParser());
+facebookMiddleware.use(passport.initialize());
 
 // =================== Routes ===================
-googleRoute.get(
-  "/google",
-  passport.authenticate("google", {
-    scope: ["profile", "email"],
-    accessType: "offline",
-    prompt: "consent",
+facebookRoute.get(
+  "/facebook",
+  passport.authenticate("facebook", {
+    scope: ["email"],
   })
 );
 
-googleRoute.get(
-  "/google/callback",
-  passport.authenticate("google", {
+facebookRoute.get(
+  "/facebook/callback",
+  passport.authenticate("facebook", {
     failureRedirect: "/login",
     session: false,
   }),
@@ -101,20 +101,20 @@ googleRoute.get(
       req.user as any;
 
     res.cookie("accessToken",myAccessToken,{
-      // httpOnly: true,
-      // secure: true,
-      // sameSite: "none",
-      // maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000,
     }).cookie("refreshToken",myRefreshToken,{
-      // httpOnly: true,
-      // secure: true,
-      // sameSite: "none",
-      // maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000,
     }).cookie("loginType",loginType,{
-      // httpOnly: true,
-      // secure: true,
-      // sameSite: "none",
-      // maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000,
     })
 
     console.log("Login successfully with GOOGLE")
@@ -122,5 +122,4 @@ googleRoute.get(
   }
 );
 
-
-export { googleRoute, googleMiddleware };
+export { facebookRoute, facebookMiddleware };

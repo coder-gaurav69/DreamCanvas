@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import userModel from "../Schema/userSchema.js";
-import {googleValidate} from "../OAUTH/googleAuth.js"
+import { generateToken } from "../utils/tokenGeneration.js";
 
 import {
   JWT_SECRET_KEY_ACCESSTOKEN,
@@ -25,14 +25,10 @@ const loginMiddleware = async (
     return;
   }
 
-  console.log(email, password);
-
   try {
     const user:any = await userModel
       .findOne({ email })
       .select("-userName -generatedImages -createdAt");
-    
-    console.log()
 
     if (!user) {
       res.status(400).json({
@@ -102,66 +98,47 @@ const registerMiddleware = async (
   }
 };
 
-const validate = async (req: Request, res: Response, next: NextFunction):Promise<any> => {
-  const { accessToken, refreshToken, id, loginType ,folderName} = req.cookies.user || {};
 
-  if (!accessToken || !refreshToken || !id || !loginType) {
-    return res.status(401).json({
-      message: "Not an authorised user",
-      success: false,
-    });
+const validate = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  const accessToken = req.cookies.accessToken;
+  const refreshToken = req.cookies.refreshToken;
+
+  if (!accessToken) {
+    return res.status(401).json({ message: "Access token missing", success: false });
   }
 
-  if (loginType == "Google") {
-
-    console.log('Logged in from Google');
-    googleValidate(accessToken,refreshToken,id,folderName)
-    console.log('working fine google')
+  try {
+    const decoded = jwt.verify(accessToken, process.env.JWT_SECRET_KEY_ACCESSTOKEN!);
+    req.user = decoded;
     return next();
-  }
+  } catch (err) {
+    // Try refresh token
+    if (!refreshToken) {
+      return res.status(401).json({ message: "Session expired, please login again", success: false });
+    }
 
-  else if (loginType == "Github") {
-    console.log('Logged in from Github');
-    return next();
-  }
+    try {
+      const decodedRefresh: any = jwt.verify(refreshToken, process.env.JWT_SECRET_KEY_REFRESHTOKEN!);
+      const user = await userModel.findById(decodedRefresh.id);
 
-  // for custom email validation
-  else if (loginType == "Email") {
-    jwt.verify(
-      accessToken,
-      JWT_SECRET_KEY_ACCESSTOKEN,
-      async (err: any, decoded: any): Promise<void> => {
-        if (err) {
-          const userExists = await userModel.findById(id).select("-password -generatedImages -userName");
-
-          if (!userExists) {
-            res.status(404).json({
-              message: "User not found, please create your account",
-              success: false,
-            });
-            return;
-          }
-
-          const newAccessToken = jwt.sign({ id }, JWT_SECRET_KEY_ACCESSTOKEN, { expiresIn: "5h" });
-          const newRefreshToken = jwt.sign({ id }, JWT_SECRET_KEY_REFRESHTOKEN, { expiresIn: "24h" });
-
-          await userModel.findByIdAndUpdate(id, {
-            $set: { refreshToken: newRefreshToken },
-          });
-
-          res.cookie("user", {
-            accessToken: newAccessToken,
-            refreshToken: newRefreshToken,
-            id,
-            loginType: "Email"
-          });
-
-          return next();
-        }
-        console.log('sahi chl rhaa hai na');
-        return next(); // access token is valid
+      if (!user || user.refreshToken !== refreshToken) {
+        return res.status(403).json({ message: "Invalid refresh token", success: false });
       }
-    );
+
+      const [newAccessToken, newRefreshToken] = generateToken(user._id.toString(), user.email);
+
+      await userModel.findByIdAndUpdate(user._id, { refreshToken: newRefreshToken });
+
+      res.cookie("accessToken", newAccessToken);
+
+      res.cookie("refreshToken", newRefreshToken);
+
+      req.user = { id: user._id, email: user.email };
+      return next();
+
+    } catch (refreshErr) {
+      return res.status(403).json({ message: "Refresh token expired or invalid", success: false });
+    }
   }
 };
 

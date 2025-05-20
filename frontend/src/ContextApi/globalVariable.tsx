@@ -46,10 +46,11 @@ const GlobalProvider = ({ children }: { children: ReactNode }) => {
     checkValidation();
     
     if(authenticated == true){
-      // Periodic validation every 60 seconds
+
       intervalId = setInterval(() => {
         checkValidation();
-      }, 300000); 
+      }, 30000);
+       
     }
 
     return () => clearInterval(intervalId);

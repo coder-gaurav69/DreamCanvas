@@ -7,19 +7,14 @@ import {
   FRONTEND_URL,
 } from "../config.js";
 import bcrypt from "bcrypt";
+import { generateToken } from "../utils/tokenGeneration.js";
 
 // controller for login
 const loginController = async (req: Request, res: Response) => {
   try {
     const { email, _id } = (req as any).user;
 
-    const accessToken = jwt.sign({ _id }, JWT_SECRET_KEY_ACCESSTOKEN, {
-      expiresIn: "5h",
-    });
-
-    const refreshToken = jwt.sign({ _id }, JWT_SECRET_KEY_REFRESHTOKEN, {
-      expiresIn: "24h",
-    });
+    const [accessToken, refreshToken] = generateToken(_id, email);
 
     const response = await userModel.findOneAndUpdate(
       { _id },
@@ -28,24 +23,27 @@ const loginController = async (req: Request, res: Response) => {
     );
 
     // Set cookie
-    const user = {
-      accessToken: accessToken,
-      refreshToken: refreshToken,
-      folderName: email,
-      loginType: "Email",
-      id: _id,
-    };
-
-    console.log("User logged in successfully");
-
-    res.cookie("user", user, 
-      {
+    res
+      .cookie("accessToken", accessToken, {
         httpOnly: true,
-        secure: true, // only send cookie over HTTPS
-        sameSite: "none", // allow cross-site cookie
-        maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-      }
-  );
+        secure: true,
+        sameSite: "none",
+        maxAge: 24 * 60 * 60 * 1000,
+      })
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        maxAge: 24 * 60 * 60 * 1000,
+      })
+      .cookie("loginType", "Email", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+
+    console.log("Login successfully");
 
     res.status(200).json({
       message: "User logged in successfully",
@@ -74,21 +72,7 @@ const registerController = async (req: Request, res: Response) => {
 
     const response = await newUser.save();
 
-    const accessToken = jwt.sign(
-      { _id: response._id },
-      JWT_SECRET_KEY_ACCESSTOKEN,
-      {
-        expiresIn: "5h",
-      }
-    );
-
-    const refreshToken = jwt.sign(
-      { _id: response._id },
-      JWT_SECRET_KEY_REFRESHTOKEN,
-      {
-        expiresIn: "24h",
-      }
-    );
+    const [accessToken,refreshToken] = generateToken(response.id,email);
 
     await userModel.findByIdAndUpdate(
       { _id: response._id },
@@ -98,27 +82,32 @@ const registerController = async (req: Request, res: Response) => {
     );
 
     // Set cookie
-    const user = {
-      accessToken: accessToken,
-      refreshToken: refreshToken,
-      folderName: email,
-      id: response._id,
-      loginType: "Email",
-    };
-
-    res.cookie("user", user, 
-      {
+    res
+      .cookie("accessToken", accessToken, {
         httpOnly: true,
-        secure: true, // only send cookie over HTTPS
-        sameSite: "none", // allow cross-site cookie
-        maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-      }
-  );
+        secure: true,
+        sameSite: "none",
+        maxAge: 24 * 60 * 60 * 1000,
+      })
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        maxAge: 24 * 60 * 60 * 1000,
+      })
+      .cookie("loginType", "Email", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+
 
     res.status(201).json({
       message: "User registered successfully",
       success: true,
     });
+
   } catch (error) {
     console.error("Error in registerController:", error);
     res.status(500).json({
@@ -130,9 +119,9 @@ const registerController = async (req: Request, res: Response) => {
 
 // controller for logout
 const logoutController = async (req: Request, res: Response): Promise<void> => {
-  const usercookie = req.cookies.user;
+  const { loginType, refreshToken, accessToken } = req.cookies;
 
-  if (!usercookie) {
+  if (!req.cookies) {
     res.status(400).json({
       message: "Login first",
       success: false,
@@ -141,14 +130,25 @@ const logoutController = async (req: Request, res: Response): Promise<void> => {
   }
 
   // Clear the cookie (match the cookie options used during set)
-  res.clearCookie("user",
-    {
+  res
+    .clearCookie("loginType", {
       httpOnly: true,
       secure: true,
-      sameSite: 'none',
-      path: "/", // should match the path used when setting the cookie
-    }
-);
+      sameSite: "none",
+      path: "/",
+    })
+    .clearCookie("accessToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: "/",
+    })
+    .clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: "/",
+    });
 
   console.log("Logout successfully");
 
@@ -157,6 +157,5 @@ const logoutController = async (req: Request, res: Response): Promise<void> => {
     success: true,
   });
 };
-
 
 export { loginController, registerController, logoutController };

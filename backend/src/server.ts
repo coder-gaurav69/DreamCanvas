@@ -11,7 +11,10 @@ import { PORT, MONGODB_URL } from './config.js';
 import route from './routes/generate-delete-get-routes.js';
 import { validate } from './MiddleWare/authorisation.js';
 import { googleRoute , googleMiddleware } from './OAUTH/googleAuth.js';
-import { twitterRoute , twitterMiddleware } from './OAUTH/twitterAuth.js';
+import { facebookRoute , facebookMiddleware } from './OAUTH/facebookAuth.js';
+import { githubMiddleware, githubRoute } from './OAUTH/githubAuth.js';
+
+import { twitterMiddleware , twitterRoute } from './OAUTH/twitterAuth.js';
 
 dotenv.config();
 const app = express();
@@ -52,14 +55,23 @@ app.get('/test-cookies', (req, res) => {
 
 
 
-// // Use Google OAuth middleware and routes
+// Use Google OAuth middleware and routes
 app.use(googleMiddleware);
 app.use('/auth', googleRoute);
 
 
-// // Use twitter OAuth middleware and routes
+// Use facebook OAuth middleware and routes
+app.use('/auth',facebookRoute);
+app.use(facebookMiddleware);
+
+
+// // Use github OAuth middleware and routes
+app.use('/auth',githubRoute);
+app.use(githubMiddleware);
+
+// // Use github OAuth middleware and routes
+app.use('/auth',twitterRoute);
 app.use(twitterMiddleware);
-app.use(twitterRoute);
 
 
 
