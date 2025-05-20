@@ -147,12 +147,13 @@ const NavBar = () => {
 
         {/* Theme Toggle */}
         <div
-          className={`flex items-center justify-center w-[32px] h-[32px] ml-[30px] rounded-full shadow-[0_0_0_0.3px_#6D28D9] ${mode === "Light"
-                ? "text-black"
+          className={`flex items-center justify-center w-[32px] h-[32px] ml-[30px] rounded-full shadow-[0_0_0_0.3px_#6D28D9]
+           ${mode === "Light"
+                ? "text-black hover:bg-[rgba(0,0,0,0.1)]"
                 :mode === "Dark"
-                ?"text-white"
+                ?"text-white hover:bg-[#18181A]"
                 :"bg-green-200"
-            } hover:text-[#6D28D9] hover:bg-[#18181A] transition-all duration-500 text-[12px]`}
+            } hover:text-[#6D28D9] transition-all duration-500 text-[12px]`}
           onClick={(e) => {
             e.stopPropagation();
             setToggleBtn((prev) => !prev);
@@ -262,27 +263,34 @@ const NavBar = () => {
       <div className="md:hidden flex items-center">
         {/* Theme Toggle */}
         <div
-          className="flex items-center justify-center w-[36px] h-[36px] ml-[32px] rounded-full border-[1px] border-[#6D28D9] text-white hover:text-[#6D28D9] hover:bg-[#18181A] transition-all duration-500"
+          className={`flex items-center justify-center w-[36px] h-[36px] ml-[32px] rounded-full border-[1px] border-[#6D28D9] hover:text-[#6D28D9] ${mode === "Light"
+                ? "text-black hover:bg-[rgba(0,0,0,0.1)]"
+                :mode === "Dark"
+                ?"text-white hover:bg-[#18181A]"
+                :"bg-green-200"
+            } transition-all duration-500 text-[12px]}`}
           onClick={(e) => {
             e.stopPropagation();
             setToggleBtn((prev) => !prev);
             setToggleMenu(false);
           }}
         >
-          <FaRegMoon />
+          {mode == 'Light'?<CiLight className="text-lg" />:mode=='Dark'?<MdOutlineDarkMode className="text-lg"/>:<HiMiniComputerDesktop className="text-lg"/>}
+          {/* <FaRegMoon /> */}
         </div>
 
         {toggleBtn && (
-          <div className="flex flex-col absolute top-[70px] right-[40px] text-white shadow-[0_0_0_0.3px_#6D28D9] p-[3px] rounded-[10px]">
-            <div className="flex gap-3 items-center hover:bg-[rgba(255,255,255,0.2)] py-2 pr-8 pl-2 rounded-[10px]">
+          <div className="flex flex-col  w-full absolute top-[68px] right-0 text-white shadow-[0_0_0_0.3px_#6D28D9] p-[3px] bg-[black] z-10">
+
+            <div className="flex gap-3 items-center hover:bg-[rgba(255,255,255,0.2)] py-2 pr-8 pl-2 rounded-[10px]" onClick={() => handleMode("Light")}>
               <CiLight />
               <p>Light</p>
             </div>
-            <div className="flex gap-3 items-center hover:bg-[rgba(255,255,255,0.2)] py-2 pr-8 pl-2 rounded-[10px]">
+            <div className="flex gap-3 items-center hover:bg-[rgba(255,255,255,0.2)] py-2 pr-8 pl-2 rounded-[10px]" onClick={() => handleMode("Dark")}>
               <MdOutlineDarkMode />
               <p>Dark</p>
             </div>
-            <div className="flex gap-3 items-center hover:bg-[rgba(255,255,255,0.2)] py-2 pr-8 pl-2 rounded-[10px]">
+            <div className="flex gap-3 items-center hover:bg-[rgba(255,255,255,0.2)] py-2 pr-8 pl-2 rounded-[10px]" onClick={() => handleMode("System")}>
               <HiMiniComputerDesktop />
               <p>System</p>
             </div>
@@ -291,7 +299,12 @@ const NavBar = () => {
 
         {/* Hamburger Menu */}
         <div
-          className="text-white flex items-center p-[8px] ml-[8px] text-[24px]"
+          className={`flex items-center p-[8px] ml-[8px] text-[24px] ${mode === "Light"
+                ? "text-black"
+                :mode === "Dark"
+                ?"text-white"
+                :"text-green"
+            }`}
           onClick={(e) => {
             e.stopPropagation();
             setToggleMenu((prev) => !prev);
