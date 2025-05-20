@@ -101,20 +101,20 @@ googleRoute.get(
       req.user as any;
 
     res.cookie("accessToken",myAccessToken,{
-      // httpOnly: true,
-      // secure: true,
-      // sameSite: "none",
-      // maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000,
     }).cookie("refreshToken",myRefreshToken,{
-      // httpOnly: true,
-      // secure: true,
-      // sameSite: "none",
-      // maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000,
     }).cookie("loginType",loginType,{
-      // httpOnly: true,
-      // secure: true,
-      // sameSite: "none",
-      // maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000,
     })
 
     console.log("Login successfully with GOOGLE")

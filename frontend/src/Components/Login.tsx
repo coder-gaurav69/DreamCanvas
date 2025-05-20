@@ -94,14 +94,11 @@ const Login = () => {
     window.open(url, "_self");
   };
 
-  // const handle0AuthGithubLogin = async (): Promise<void> => {
-  //   const url = `${import.meta.env.VITE_BACKEND_URL}/auth/github`;
-  //   window.open(url, "_self");
-  // };
   const handle0AuthGithubLogin = async (): Promise<void> => {
-    const url = `${import.meta.env.VITE_BACKEND_URL}/auth/twitter`;
+    const url = `${import.meta.env.VITE_BACKEND_URL}/auth/github`;
     window.open(url, "_self");
   };
+  
   
   return (
     <div

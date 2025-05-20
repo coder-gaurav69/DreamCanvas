@@ -14,7 +14,6 @@ import { googleRoute , googleMiddleware } from './OAUTH/googleAuth.js';
 import { facebookRoute , facebookMiddleware } from './OAUTH/facebookAuth.js';
 import { githubMiddleware, githubRoute } from './OAUTH/githubAuth.js';
 
-import { twitterMiddleware , twitterRoute } from './OAUTH/twitterAuth.js';
 
 dotenv.config();
 const app = express();
@@ -68,12 +67,6 @@ app.use(facebookMiddleware);
 // // Use github OAuth middleware and routes
 app.use('/auth',githubRoute);
 app.use(githubMiddleware);
-
-// // Use github OAuth middleware and routes
-app.use('/auth',twitterRoute);
-app.use(twitterMiddleware);
-
-
 
 
 // route which validates users
