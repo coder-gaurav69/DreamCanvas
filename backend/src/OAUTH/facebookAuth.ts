@@ -27,7 +27,7 @@ passport.use(
     async (req, accessToken, refreshToken, profile, done) => {
 
       const email = profile?.emails?.[0]?.value;
-      const existingUser = await userModel.findOne({ email });
+      const existingUser = await userModel.findOne({ email:email,loginType:"Facebook" });
 
       if (existingUser) {
 
@@ -53,6 +53,7 @@ passport.use(
         userName: profile.displayName,
         email: email,
         profilePhoto: profile?.photos?.[0]?.value,
+        loginType:"Facebook"
       });
       
       await newUser.save();

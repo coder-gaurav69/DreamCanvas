@@ -17,7 +17,7 @@ const loginController = async (req: Request, res: Response) => {
     const [accessToken, refreshToken] = generateToken(_id, email);
 
     const response = await userModel.findOneAndUpdate(
-      { _id },
+      { _id , loginType:"Email" , email },
       { $set: { refreshToken: refreshToken } },
       { new: true }
     );
@@ -68,6 +68,7 @@ const registerController = async (req: Request, res: Response) => {
       userName: name,
       email,
       password: hashedPassword,
+      loginType:"Email"
     });
 
     const response = await newUser.save();

@@ -27,7 +27,7 @@ const loginMiddleware = async (
 
   try {
     const user:any = await userModel
-      .findOne({ email })
+      .findOne({ email , loginType:"Email"})
       .select("-userName -generatedImages -createdAt");
 
     if (!user) {
@@ -77,7 +77,7 @@ const registerMiddleware = async (
   }
 
   try {
-    const existingUser = await userModel.findOne({ email });
+    const existingUser = await userModel.findOne({ email , loginType:"Email" });
 
     if (existingUser) {
       res.status(400).json({
@@ -108,7 +108,7 @@ const validate = async (req: Request, res: Response, next: NextFunction): Promis
   }
 
   try {
-    const decoded = jwt.verify(accessToken, process.env.JWT_SECRET_KEY_ACCESSTOKEN!);
+    const decoded = jwt.verify(accessToken, JWT_SECRET_KEY_ACCESSTOKEN);
     req.user = decoded;
     return next();
   } catch (err) {
@@ -118,7 +118,7 @@ const validate = async (req: Request, res: Response, next: NextFunction): Promis
     }
 
     try {
-      const decodedRefresh: any = jwt.verify(refreshToken, process.env.JWT_SECRET_KEY_REFRESHTOKEN!);
+      const decodedRefresh: any = jwt.verify(refreshToken, JWT_SECRET_KEY_REFRESHTOKEN!);
       const user = await userModel.findById(decodedRefresh.id);
 
       if (!user || user.refreshToken !== refreshToken) {

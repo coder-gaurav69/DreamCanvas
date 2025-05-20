@@ -2,6 +2,8 @@ import express, { Router, Request, Response } from "express";
 import passport from "passport";
 import { Strategy as GitHubStrategy } from "passport-github2";
 import cookieParser from "cookie-parser";
+import axios from "axios";
+import { generateToken } from "../utils/tokenGeneration.js";
 import {
   GITHUB_CLIENT_ID,
   GITHUB_CLIENT_SECRET,
@@ -9,7 +11,6 @@ import {
   FRONTEND_URL,
 } from "../config.js";
 import userModel from "../Schema/userSchema.js";
-import { generateToken } from "../utils/tokenGeneration.js";
 
 const githubRoute: Router = express.Router();
 
@@ -20,58 +21,46 @@ passport.use(
       clientID: GITHUB_CLIENT_ID!,
       clientSecret: GITHUB_CLIENT_SECRET!,
       callbackURL: GITHUB_CALLBACK_URL!,
-      scope: ["user:email"],
       passReqToCallback: true,
     },
-    async (profile:any, done:any) => {
-      try {
-        // GitHub profile emails might be private; use profile.emails if available
-        console.log(profile)
-        const email = profile?.emails?.[0]?.value;
+    async (req: any, accessToken: any, refreshToken: any, profile: any, done: any) => {
+      let email;
 
-        if (!email) {
-          return done(new Error("No email found in GitHub profile"));
-        }
-
-        const existingUser = await userModel.findOne({ email });
-
-        if (existingUser) {
-          const [myAccessToken, myRefreshToken] = generateToken(
-            existingUser._id.toString(),
-            existingUser.email
-          );
-
-          await userModel.findByIdAndUpdate(existingUser._id, {
-            $set: { refreshToken: myRefreshToken },
+      // Try to get email from profile.emails first
+      if (profile.emails && profile.emails.length > 0) {
+        email = profile.emails[0].value;
+      } else {
+        // Fetch emails from GitHub API as fallback
+        try {
+          const emailsResponse = await axios.get("https://api.github.com/user/emails", {
+            headers: {
+              Authorization: `token ${accessToken}`,
+            },
           });
+          const emails = emailsResponse.data;
 
-          const user = {
-            profile,
-            myAccessToken,
-            myRefreshToken,
-            folderName: email,
-            id: existingUser._id,
-            loginType: "GitHub",
-          };
-
-          return done(null, user);
+          // Find primary and verified email, or fallback to first email
+          const primaryEmailObj =
+            emails.find((e: any) => e.primary && e.verified) || emails[0];
+          email = primaryEmailObj?.email;
+        } catch (error) {
+          console.error("Error fetching emails from GitHub API:", error);
+          email = null;
         }
+      }
 
-        // If user doesn't exist, create new user
-        const newUser = new userModel({
-          userName: profile.displayName || profile.username,
-          email: email,
-          profilePhoto: profile.photos?.[0]?.value,
-        });
+      // Use email or fallback to username or profileUrl for folderName and lookup
+      const uniqueId = email || profile.username || profile.profileUrl;
 
-        await newUser.save();
+      const existingUser = await userModel.findOne({ email: email, loginType:"Github" });
 
+      if (existingUser) {
         const [myAccessToken, myRefreshToken] = generateToken(
-          newUser._id.toString(),
-          newUser.email
+          existingUser._id.toString(),
+          existingUser.email
         );
 
-        await userModel.findByIdAndUpdate(newUser._id, {
+        await userModel.findByIdAndUpdate(existingUser._id, {
           $set: { refreshToken: myRefreshToken },
         });
 
@@ -79,15 +68,41 @@ passport.use(
           profile,
           myAccessToken,
           myRefreshToken,
-          folderName: email,
-          id: newUser._id,
+          folderName: uniqueId,
+          id: existingUser._id,
           loginType: "GitHub",
         };
-
         return done(null, user);
-      } catch (error) {
-        return done(error);
       }
+
+      const newUser = new userModel({
+        userName: profile.username || profile.displayName,
+        email: email,
+        profilePhoto: profile.photos?.[0]?.value,
+        loginType:"Github",
+      });
+
+      await newUser.save();
+
+      const [myAccessToken, myRefreshToken] = generateToken(
+        newUser._id.toString(),
+        newUser.email
+      );
+
+      await userModel.findByIdAndUpdate(newUser._id, {
+        $set: { refreshToken: myRefreshToken },
+      });
+
+      const user = {
+        profile,
+        myAccessToken,
+        myRefreshToken,
+        folderName: uniqueId,
+        id: newUser._id,
+        loginType: "GitHub",
+      };
+
+      return done(null, user);
     }
   )
 );
@@ -112,8 +127,14 @@ githubRoute.get(
     session: false,
   }),
   (req: Request, res: Response) => {
-    const { myAccessToken, myRefreshToken, profile, id, folderName, loginType } =
-      req.user as any;
+    const {
+      myAccessToken,
+      myRefreshToken,
+      profile,
+      id,
+      folderName,
+      loginType,
+    } = req.user as any;
 
     res
       .cookie("accessToken", myAccessToken, {

@@ -8,18 +8,21 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
+    // unique: true,
   },
   password: {
     type: String,
   },
   profilePhoto: {
     type: String,
-    unique: true,
+    // unique: true,
   },
   refreshToken: {
     type: String,
     unique: true,
+  },
+  loginType:{
+    type:String,
   },
   generatedImages: {
     images: {
