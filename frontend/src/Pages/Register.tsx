@@ -81,6 +81,22 @@ const Register = () => {
     ? "bg-[#0e0e0e] text-white shadow-[0_0_0_1px_rgba(255,255,255,0.15)] focus:shadow-[0_0_0_2px_rgba(109,40,217,1)]"
     : "bg-white text-black shadow-[0_0_0_1px_rgba(0,0,0,0.1)] focus:shadow-[0_0_0_2px_rgba(109,40,217,1)]";
 
+
+  const handle0AuthGoogleLogin = async (): Promise<void> => {
+    const url = `${import.meta.env.VITE_BACKEND_URL}/auth/google`;
+    window.open(url, "_self");
+  };
+  
+  const handle0AuthFacebookLogin = async (): Promise<void> => {
+    const url = `${import.meta.env.VITE_BACKEND_URL}/auth/facebook`;
+    window.open(url, "_self");
+  };
+
+  const handle0AuthGithubLogin = async (): Promise<void> => {
+    const url = `${import.meta.env.VITE_BACKEND_URL}/auth/github`;
+    window.open(url, "_self");
+  };
+
   return (
     <div
       className={`w-full max-w-[480px] pt-[80px] px-4 pb-10 mx-auto flex flex-col justify-center items-center ${
@@ -178,13 +194,13 @@ const Register = () => {
         </div>
 
         <div className="grid grid-cols-3 gap-4 text-xl">
-          <div className="border border-white/20 dark:border-gray-700 flex items-center justify-center rounded-lg py-2 hover:bg-white/10 transition">
+          <div className="border border-white/20 dark:border-gray-700 flex items-center justify-center rounded-lg py-2 hover:bg-white/10 transition" onClick={handle0AuthGoogleLogin}>
             <FcGoogle />
           </div>
-          <div className="border border-white/20 dark:border-gray-700 flex items-center justify-center rounded-lg py-2 hover:bg-white/10 transition">
+          <div className="border border-white/20 dark:border-gray-700 flex items-center justify-center rounded-lg py-2 hover:bg-white/10 transition" onClick={handle0AuthFacebookLogin}>
             <FaFacebook className="text-[#2563EB]" />
           </div>
-          <div className="border border-white/20 dark:border-gray-700 flex items-center justify-center rounded-lg py-2 hover:bg-white/10 transition">
+          <div className="border border-white/20 dark:border-gray-700 flex items-center justify-center rounded-lg py-2 hover:bg-white/10 transition" onClick={handle0AuthGithubLogin}>
             <FaMicrosoft className="text-[#00A4EF]" />
           </div>
         </div>
