@@ -49,7 +49,7 @@ const GlobalProvider = ({ children }: { children: ReactNode }) => {
 
       intervalId = setInterval(() => {
         checkValidation();
-      }, 30000);
+      }, 3000);
        
     }
 

@@ -11,20 +11,17 @@ import userModel from "../Schema/userSchema.js";
 const generateImage = async (req: Request, res: Response): Promise<any> => {
   const { input } = req.body;
 
-  const { id } = req.cookies.user;
+  const {id,email} = (req as any).user;
 
-  if (!input || !id) {
+  if (!input || !id || !email) {
     return res
       .status(400)
-      .json({ message: "Input and Id are required", success: false });
+      .json({ message: "Input , Id and Email are required", success: false });
   }
 
   try {
-    const user = await userModel.findById(id);
 
-    const email = user?.email;
-
-    const folderName = (email as any).split("@")[0];
+    const folderName = `(${email?.split('@')[0]})` + id.toString();;
 
     const url = "http://127.0.0.1:7860/sdapi/v1/txt2img";
 
@@ -64,7 +61,7 @@ const generateImage = async (req: Request, res: Response): Promise<any> => {
 
     // Save to DB - appending to images array
     await userModel.updateOne(
-      { email },
+      { _id:id , email },
       {
         $push: {
           "generatedImages.images": {
@@ -96,7 +93,7 @@ const generateImage = async (req: Request, res: Response): Promise<any> => {
 
 const deleteImage = async (req: Request, res: Response): Promise<any> => {
   const { public_id } = req.body;
-  const { id } = req.cookies.user;
+  const { id , email } = (req as any).user;
 
   if (!public_id) {
     return res.status(400).json({
@@ -109,6 +106,7 @@ const deleteImage = async (req: Request, res: Response): Promise<any> => {
     // Check if the image exists before deletion (optional safety check)
     const user = await userModel.findOne({
       _id: id,
+      email,
       "generatedImages.images.publicId": public_id,
     });
 
@@ -147,11 +145,10 @@ const deleteImage = async (req: Request, res: Response): Promise<any> => {
 
 const getImages = async (req: Request, res: Response): Promise<any> => {
   
-  const {id} = req.cookies.user;
-  console.log(id)
+  const {id,email} = (req as any).user;
 
   try {
-    const result = await userModel.findById({ _id:id });
+    const result = await userModel.findById({ _id:id , email});
 
     if (!result) {
       return res.status(400).json({

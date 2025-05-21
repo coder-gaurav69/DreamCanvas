@@ -26,8 +26,8 @@ const loginMiddleware = async (
   }
 
   try {
-    const user:any = await userModel
-      .findOne({ email , loginType:"Email"})
+    const user: any = await userModel
+      .findOne({ email, loginType: "Email" })
       .select("-userName -generatedImages -createdAt");
 
     if (!user) {
@@ -77,7 +77,7 @@ const registerMiddleware = async (
   }
 
   try {
-    const existingUser = await userModel.findOne({ email , loginType:"Email" });
+    const existingUser = await userModel.findOne({ email, loginType: "Email" });
 
     if (existingUser) {
       res.status(400).json({
@@ -98,49 +98,74 @@ const registerMiddleware = async (
   }
 };
 
-
-const validate = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+const validate = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<any> => {
   const accessToken = req.cookies.accessToken;
   const refreshToken = req.cookies.refreshToken;
 
   if (!accessToken) {
-    return res.status(401).json({ message: "Access token missing", success: false });
+    return res
+      .status(401)
+      .json({ message: "Access token missing", success: false });
   }
 
   try {
     const decoded = jwt.verify(accessToken, JWT_SECRET_KEY_ACCESSTOKEN);
-    req.user = decoded;
+    (req as any).user = decoded;
+
     return next();
   } catch (err) {
     // Try refresh token
     if (!refreshToken) {
-      return res.status(401).json({ message: "Session expired, please login again", success: false });
+      return res.status(401).json({
+        message: "Session expired, please login again",
+        success: false,
+      });
     }
 
     try {
-      const decodedRefresh: any = jwt.verify(refreshToken, JWT_SECRET_KEY_REFRESHTOKEN!);
+      const decodedRefresh: any = jwt.verify(
+        refreshToken,
+        JWT_SECRET_KEY_REFRESHTOKEN!
+      );
       const user = await userModel.findById(decodedRefresh.id);
 
       if (!user || user.refreshToken !== refreshToken) {
-        return res.status(403).json({ message: "Invalid refresh token", success: false });
+        return res
+          .status(403)
+          .json({ message: "Invalid refresh token", success: false });
       }
 
-      const [newAccessToken, newRefreshToken] = generateToken(user._id.toString(), user.email);
+      const [newAccessToken, newRefreshToken] = generateToken(
+        user._id.toString(),
+        user.email
+      );
 
-      await userModel.findByIdAndUpdate(user._id, { refreshToken: newRefreshToken });
+      await userModel.findByIdAndUpdate(user._id, {
+        refreshToken: newRefreshToken,
+      });
 
-      res.cookie("accessToken", newAccessToken);
+      const parameter = {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none" as const,
+        maxAge: 24 * 60 * 60 * 1000,
+      };
 
-      res.cookie("refreshToken", newRefreshToken);
+      res.cookie("accessToken", newAccessToken, parameter);
+      res.cookie("refreshToken", newRefreshToken, parameter);
 
       req.user = { id: user._id, email: user.email };
       return next();
-
     } catch (refreshErr) {
-      return res.status(403).json({ message: "Refresh token expired or invalid", success: false });
+      return res
+        .status(403)
+        .json({ message: "Refresh token expired or invalid", success: false });
     }
   }
 };
-
 
 export { loginMiddleware, registerMiddleware, validate };

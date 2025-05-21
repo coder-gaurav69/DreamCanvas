@@ -30,6 +30,10 @@ const userSchema = new mongoose.Schema({
       publicId: String,
     },
   },
+  folderName:{
+    type:String,
+    unique:true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

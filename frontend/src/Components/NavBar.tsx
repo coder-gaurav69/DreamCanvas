@@ -317,7 +317,7 @@ const NavBar = () => {
 
       {/* Hamburger Dropdown Menu */}
       {toggleMenu && (
-        <div className="flex flex-col absolute top-[60px] left-0 w-[100%] p-[8px_8px_12px_8px] text-white bg-black md:hidden">
+        <div className={`flex flex-col absolute top-[60px] left-0 w-[100%] p-[8px_8px_12px_8px] md:hidden ${mode === "Light"?"text-black bg-[rgba(0,0,0,1)]":mode === "Dark"?"text-white bg-black":"text-blue"}`}>
           <Link
             to={"/"}
             className={`py-[8px] px-[12px] mt-[4px] rounded-[10px] ${

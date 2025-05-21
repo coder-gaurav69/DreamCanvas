@@ -13,35 +13,27 @@ import { generateToken } from "../utils/tokenGeneration.js";
 const loginController = async (req: Request, res: Response) => {
   try {
     const { email, _id } = (req as any).user;
+    // console.log(_id)
 
     const [accessToken, refreshToken] = generateToken(_id, email);
 
     const response = await userModel.findOneAndUpdate(
-      { _id , loginType:"Email" , email },
+      { _id, loginType: "Email", email },
       { $set: { refreshToken: refreshToken } },
       { new: true }
     );
 
     // Set cookie
+    const parameter = {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none" as const,
+      maxAge: 24 * 60 * 60 * 1000,
+    };
     res
-      .cookie("accessToken", accessToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        maxAge: 24 * 60 * 60 * 1000,
-      })
-      .cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        maxAge: 24 * 60 * 60 * 1000,
-      })
-      .cookie("loginType", "Email", {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        maxAge: 24 * 60 * 60 * 1000,
-      });
+      .cookie("accessToken", accessToken, parameter)
+      .cookie("refreshToken", refreshToken, parameter)
+      .cookie("loginType", "Email", parameter);
 
     console.log("Login successfully");
 
@@ -68,47 +60,39 @@ const registerController = async (req: Request, res: Response) => {
       userName: name,
       email,
       password: hashedPassword,
-      loginType:"Email"
+      loginType: "Email",
     });
 
     const response = await newUser.save();
 
-    const [accessToken,refreshToken] = generateToken(response.id,email);
+    const [accessToken, refreshToken] = generateToken(response.id, email);
+
+    const folderName = `(${email?.split("@")[0]})` + newUser?.id.toString();
 
     await userModel.findByIdAndUpdate(
       { _id: response._id },
       {
-        $set: { refreshToken: refreshToken },
+        $set: { refreshToken: refreshToken, folderName: folderName },
       }
     );
 
     // Set cookie
-    res
-      .cookie("accessToken", accessToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        maxAge: 24 * 60 * 60 * 1000,
-      })
-      .cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        maxAge: 24 * 60 * 60 * 1000,
-      })
-      .cookie("loginType", "Email", {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        maxAge: 24 * 60 * 60 * 1000,
-      });
+    const parameter = {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none" as const,
+      maxAge: 24 * 60 * 60 * 1000,
+    };
 
+    res
+      .cookie("accessToken", accessToken, parameter)
+      .cookie("refreshToken", refreshToken, parameter)
+      .cookie("loginType", "Email", parameter);
 
     res.status(201).json({
       message: "User registered successfully",
       success: true,
     });
-
   } catch (error) {
     console.error("Error in registerController:", error);
     res.status(500).json({
@@ -131,25 +115,16 @@ const logoutController = async (req: Request, res: Response): Promise<void> => {
   }
 
   // Clear the cookie (match the cookie options used during set)
+  const parameter = {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none" as const,
+    path: "/",
+  };
   res
-    .clearCookie("loginType", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      path: "/",
-    })
-    .clearCookie("accessToken", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      path: "/",
-    })
-    .clearCookie("refreshToken", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      path: "/",
-    });
+    .clearCookie("loginType", parameter)
+    .clearCookie("accessToken", parameter)
+    .clearCookie("refreshToken", parameter);
 
   console.log("Logout successfully");
 

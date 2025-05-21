@@ -22,91 +22,61 @@ passport.use(
       clientSecret: GITHUB_CLIENT_SECRET!,
       callbackURL: GITHUB_CALLBACK_URL!,
       passReqToCallback: true,
+      scope: ['user:email']
     },
-    async (req: any, accessToken: any, refreshToken: any, profile: any, done: any) => {
-      let email;
-
-      // Try to get email from profile.emails first
-      if (profile.emails && profile.emails.length > 0) {
-        email = profile.emails[0].value;
-      } else {
-        // Fetch emails from GitHub API as fallback
-        try {
-          const emailsResponse = await axios.get("https://api.github.com/user/emails", {
-            headers: {
-              Authorization: `token ${accessToken}`,
-            },
-          });
-          const emails = emailsResponse.data;
-
-          // Find primary and verified email, or fallback to first email
-          const primaryEmailObj =
-            emails.find((e: any) => e.primary && e.verified) || emails[0];
-          email = primaryEmailObj?.email;
-        } catch (error) {
-          console.error("Error fetching emails from GitHub API:", error);
-          email = null;
-        }
-      }
-
-      // Use email or fallback to username or profileUrl for folderName and lookup
-      const uniqueId = email || profile.username || profile.profileUrl;
-
-      const existingUser = await userModel.findOne({ email: email, loginType:"Github" });
+    async (req:any, accessToken:any, refreshToken:any, profile:any, done:any) => {
+      const email = profile?.emails?.[0]?.value;
+      const existingUser = await userModel.findOne({ email: email, loginType: "GitHub" });
 
       if (existingUser) {
-        const [myAccessToken, myRefreshToken] = generateToken(
-          existingUser._id.toString(),
-          existingUser.email
-        );
+        const [myAccessToken, myRefreshToken] = generateToken(existingUser._id.toString(), existingUser.email);
 
         await userModel.findByIdAndUpdate(existingUser._id, {
-          $set: { refreshToken: myRefreshToken },
+          $set: { refreshToken: myRefreshToken }
         });
 
         const user = {
           profile,
           myAccessToken,
           myRefreshToken,
-          folderName: uniqueId,
-          id: existingUser._id,
-          loginType: "GitHub",
+          folderName:existingUser.folderName,
+          id: existingUser?._id,
+          loginType: "GitHub"
         };
+
         return done(null, user);
       }
 
       const newUser = new userModel({
-        userName: profile.username || profile.displayName,
+        userName: profile.displayName || profile.username,
         email: email,
-        profilePhoto: profile.photos?.[0]?.value,
-        loginType:"Github",
+        profilePhoto: profile?.photos?.[0]?.value,
+        loginType: "GitHub",
       });
 
       await newUser.save();
 
-      const [myAccessToken, myRefreshToken] = generateToken(
-        newUser._id.toString(),
-        newUser.email
-      );
+      const [myAccessToken, myRefreshToken] = generateToken(newUser._id.toString(), newUser.email);
+
+      const folderName = `(${email?.split('@')[0]})` + newUser?.id.toString();
 
       await userModel.findByIdAndUpdate(newUser._id, {
-        $set: { refreshToken: myRefreshToken },
+        $set: { refreshToken: myRefreshToken, folderName: folderName },
       });
 
       const user = {
         profile,
         myAccessToken,
         myRefreshToken,
-        folderName: uniqueId,
-        id: newUser._id,
-        loginType: "GitHub",
+        folderName: folderName,
+        id: newUser?._id,
+        loginType: 'GitHub'
       };
 
       return done(null, user);
     }
   )
 );
-
 // =================== Middleware App ===================
 const githubMiddleware = express();
 githubMiddleware.use(cookieParser());
@@ -136,27 +106,19 @@ githubRoute.get(
       loginType,
     } = req.user as any;
 
+    // setting cookies
+    const parameter = {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none" as const,
+        maxAge: 24 * 60 * 60 * 1000,
+      }
     res
-      .cookie("accessToken", myAccessToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        maxAge: 24 * 60 * 60 * 1000,
-      })
-      .cookie("refreshToken", myRefreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        maxAge: 24 * 60 * 60 * 1000,
-      })
-      .cookie("loginType", loginType, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        maxAge: 24 * 60 * 60 * 1000,
-      });
+      .cookie("accessToken", myAccessToken, parameter)
+      .cookie("refreshToken", myRefreshToken, parameter)
+      .cookie("loginType", loginType, parameter);
 
-    console.log("Login successfully with GITHUB");
+    console.log("Login successfully with Github");
     res.redirect(`${FRONTEND_URL}`);
   }
 );

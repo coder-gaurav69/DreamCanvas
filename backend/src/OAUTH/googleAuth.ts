@@ -30,7 +30,6 @@ passport.use(
       if (existingUser) {
 
         const [myAccessToken, myRefreshToken] = generateToken(existingUser._id.toString(), existingUser.email);
-        console.log(myAccessToken,refreshToken)
 
         await userModel.findByIdAndUpdate(existingUser._id,{
           $set:{refreshToken:myRefreshToken}
@@ -40,10 +39,13 @@ passport.use(
           profile,
           myAccessToken,
           myRefreshToken,
-          folderName: email,
+          folderName:existingUser?.folderName,
           id: existingUser?._id,
           loginType:"Google"
         };
+
+        console.log(user.folderName)
+  
         return done(null, user);
       }
 
@@ -58,15 +60,17 @@ passport.use(
 
       const [myAccessToken, myRefreshToken] = generateToken(newUser._id.toString(), newUser.email);
 
-       await userModel.findByIdAndUpdate(newUser._id,{
-          $set:{refreshToken:myRefreshToken}
+      const folderName = `(${email?.split('@')[0]})` + newUser?.id.toString();
+
+       const result = await userModel.findByIdAndUpdate(newUser._id,{
+          $set:{refreshToken:myRefreshToken , folderName:folderName},
         });
 
       const user = {
           profile,
           myAccessToken,
           myRefreshToken,
-          folderName: email,
+          folderName:folderName,
           id: newUser?._id,
           loginType:'Google'
       };
@@ -101,24 +105,18 @@ googleRoute.get(
     const { myAccessToken, myRefreshToken, profile, id, folderName,loginType } =
       req.user as any;
 
-    res.cookie("accessToken",myAccessToken,{
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 24 * 60 * 60 * 1000,
-    }).cookie("refreshToken",myRefreshToken,{
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 24 * 60 * 60 * 1000,
-    }).cookie("loginType",loginType,{
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 24 * 60 * 60 * 1000,
-    })
 
-    console.log("Login successfully with GOOGLE")
+
+    // setting cookies
+    const parameter = {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none" as const,
+      maxAge: 24 * 60 * 60 * 1000,
+    }
+    res.cookie("accessToken",myAccessToken, parameter).cookie("refreshToken",myRefreshToken, parameter).cookie("loginType",loginType, parameter)
+
+    console.log("Login successfully with Google");
     res.redirect(`${FRONTEND_URL}`);
   }
 );
