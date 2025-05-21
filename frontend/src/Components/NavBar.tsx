@@ -280,7 +280,7 @@ const NavBar = () => {
         </div>
 
         {toggleBtn && (
-          <div className="flex flex-col  w-full absolute top-[68px] right-0 text-white shadow-[0_0_0_0.3px_#6D28D9] p-[3px] bg-[black] z-10">
+          <div className="flex flex-col  w-full absolute top-[65px] right-0 text-white shadow-[0_0_0_0.3px_#6D28D9] p-[3px] bg-[black] z-10">
 
             <div className="flex gap-3 items-center hover:bg-[rgba(255,255,255,0.2)] py-2 pr-8 pl-2 rounded-[10px]" onClick={() => handleMode("Light")}>
               <CiLight />
@@ -317,10 +317,10 @@ const NavBar = () => {
 
       {/* Hamburger Dropdown Menu */}
       {toggleMenu && (
-        <div className={`flex flex-col absolute top-[60px] left-0 w-[100%] p-[8px_8px_12px_8px] md:hidden ${mode === "Light"?"text-black bg-[rgba(0,0,0,1)]":mode === "Dark"?"text-white bg-black":"text-blue"}`}>
+        <div className={`flex flex-col absolute top-[60px] left-0 w-[100%] p-[8px_8px_12px_8px] md:hidden text-white bg-black`}>
           <Link
             to={"/"}
-            className={`py-[8px] px-[12px] mt-[4px] rounded-[10px] ${
+            className={`py-[8px] px-[12px] mt-[4px] rounded-[10px] hover:text-[rgb(109,40,217)] ${
               active.Create ? "bg-[rgb(24,24,26)]" : ""
             }
             ${!active.Create ? "hover:bg-[rgba(24,24,26,0.5)]" : ""}`}
