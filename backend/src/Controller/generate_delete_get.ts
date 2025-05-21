@@ -6,6 +6,7 @@ import {
   deleteFileFromCloudinary,
 } from "../Cloud/Cloudinary.js";
 import userModel from "../Schema/userSchema.js";
+import { AI_MODEL_URL } from "../config.js";
 
 // controller for generate image
 const generateImage = async (req: Request, res: Response): Promise<any> => {
@@ -23,7 +24,7 @@ const generateImage = async (req: Request, res: Response): Promise<any> => {
 
     const folderName = `(${email?.split('@')[0]})` + id.toString();;
 
-    const url = "http://127.0.0.1:7860/sdapi/v1/txt2img";
+    const url = AI_MODEL_URL;
 
     const payload = {
       prompt: input,
