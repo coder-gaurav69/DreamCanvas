@@ -89,7 +89,7 @@ const Create = () => {
           {/* Style */}
           <div>
             <p className={`font-medium ${mode === 'Light'?'text-black':mode === "Dark"?'text-white':'text-green-400'}`}>Style</p>
-            <select className={`focus:shadow-[inset_0_0_0_2px_#8740E5] rounded-[10px] p-[8px_12px] mt-[8px] outline-none w-full shadow-[0_0_0_1px_rgb(23,13,41)] ${mode === 'Light'?'bg-black text-white':mode === "Dark"?'bg-black text-white':'text-green-400'}`}>
+            <select className={`focus:shadow-[inset_0_0_0_2px_#8740E5] rounded-[10px] p-[8px_12px] mt-[8px] outline-none w-full shadow-[0_0_0_1px_rgb(23,13,41)] ${mode === 'Light'?'text-black':mode === "Dark"?'bg-black text-white':'text-green-400'}`}>
               <option value="Realistic">Realistic</option>
               <option value="Artistic">Artistic</option>
               <option value="3D Render">3D Render</option>
@@ -102,7 +102,7 @@ const Create = () => {
           <div>
             <p className={`font-medium ${mode === 'Light'?'text-black':mode === "Dark"?'text-white':'text-green-400'}`}>Size</p>
 
-            <select className={`focus:shadow-[inset_0_0_0_2px_#8740E5] rounded-[10px] p-[8px_12px] mt-[8px] outline-none w-full shadow-[0_0_0_1px_rgb(23,13,41)] ${mode === 'Light'?'bg-black text-white':mode === "Dark"?'bg-black text-white':'text-green-400'}`}>
+            <select className={`focus:shadow-[inset_0_0_0_2px_#8740E5] rounded-[10px] p-[8px_12px] mt-[8px] outline-none w-full shadow-[0_0_0_1px_rgb(23,13,41)] ${mode === 'Light'?'text-black':mode === "Dark"?'bg-black text-white':'text-green-400'}`}>
               <option value="Square (1:1)">Square (1:1)</option>
               <option value="Landscape (16:9)">Landscape (16:9)</option>
               <option value="Portrait (9:16)">Portrait (9:16)</option>
@@ -113,7 +113,7 @@ const Create = () => {
           {/* Quality */}
           <div>
             <p className={`font-medium ${mode === 'Light'?'text-black':mode === "Dark"?'text-white':'text-green-400'}`}>Quality</p>
-            <select className={`focus:shadow-[inset_0_0_0_2px_#8740E5] rounded-[10px] p-[8px_12px] mt-[8px] outline-none w-full shadow-[0_0_0_1px_rgb(23,13,41)] ${mode === 'Light'?'bg-black text-white':mode === "Dark"?'bg-black text-white':'text-green-400'}`}>
+            <select className={`focus:shadow-[inset_0_0_0_2px_#8740E5] rounded-[10px] p-[8px_12px] mt-[8px] outline-none w-full shadow-[0_0_0_1px_rgb(23,13,41)] ${mode === 'Light'?'text-black':mode === "Dark"?'bg-black text-white':'text-green-400'}`}>
               <option value="Standard">Standard</option>
               <option value="HD">HD</option>
               <option value="Ultra">Ultra</option>
