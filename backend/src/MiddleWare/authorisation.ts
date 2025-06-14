@@ -114,11 +114,18 @@ const validate = async (
 
   try {
     const decoded = jwt.verify(accessToken, JWT_SECRET_KEY_ACCESSTOKEN);
-    (req as any).user = decoded;
+    const { id, email } = decoded as any;
+
+    const user = await userModel.findById({id,email});
+
+    (req as any).user = {
+      id,
+      email,
+      profileImage: (user as any)?.profilePhoto,
+    };
 
     return next();
   } catch (err) {
-    // Try refresh token
     if (!refreshToken) {
       return res.status(401).json({
         message: "Session expired, please login again",
@@ -158,12 +165,18 @@ const validate = async (
       res.cookie("accessToken", newAccessToken, parameter);
       res.cookie("refreshToken", newRefreshToken, parameter);
 
-      req.user = { id: user._id, email: user.email };
+      (req as any).user = {
+        id: user._id,
+        email: user.email,
+        profileImage: user?.profilePhoto,
+      };
+
       return next();
     } catch (refreshErr) {
-      return res
-        .status(403)
-        .json({ message: "Refresh token expired or invalid", success: false });
+      return res.status(403).json({
+        message: "Refresh token expired or invalid",
+        success: false,
+      });
     }
   }
 };

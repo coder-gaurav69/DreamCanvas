@@ -106,17 +106,17 @@ const Gallery = () => {
         <h1 className="colorAnimation text-4xl lg:text-5xl mb-[16px] leading-[50px] text-center">
           Your Gallery
         </h1>
-        <p className={`font-semibold text-center text-[16px] sm:text-[20px] ${mode === 'Light'?'text-[rgba(0,0,0,0.7)]':mode === "Dark"?'text-[rgba(255,255,255,0.5)] ':'text-green-400'}`}>
+        <p className={`font-semibold text-center text-[16px] sm:text-[20px] ${mode === 'Light'?'text-[rgba(0,0,0,0.7)]':mode === "Dark"?'text-[rgba(255,255,255,0.5)] ':'text-black'}`}>
           View, download, and manage all your AI-generated images. Create
           stunning new visuals or variations to expand your collection.
         </p>
       </div>
 
       {/*Gallery container */}
-      <div className="p-[32px] w-full shadow-[0_0_0_2px_rgb(23,13,41)] rounded-[10px] hover:translate-y-[-5px] transition-all duration-400">
+      <div className={`p-[32px] w-full ${mode=="Light"?"shadow-[0_0_0_1px_rgb(23,13,41)]":"shadow-[0_0_0_2px_rgb(23,13,41)]"} rounded-[10px] hover:translate-y-[-5px] transition-all duration-400`}>
         {!authenticated && (
-          <div className="h-[200px] shadow-[0_0_0_2px_rgb(23,13,41)] rounded-[10px] p-[32px] justify-center flex flex-col items-center">
-            <p className={`text-md mb-[16px] text-center ${mode === 'Light'?'text-[rgba(0,0,0,0.7)]':mode === "Dark"?'text-[rgba(255,255,255,0.5)] ':'text-green-400'}`}>
+          <div className={`h-[200px] ${mode=="Light"?"shadow-[0_0_0_1px_rgb(23,13,41)]":"shadow-[0_0_0_2px_rgb(23,13,41)]"} rounded-[10px] p-[32px] justify-center flex flex-col items-center`}>
+            <p className={`text-md mb-[16px] text-center ${mode === 'Light'?'text-[rgba(0,0,0,0.7)]':mode === "Dark"?'text-[rgba(255,255,255,0.5)] ':'text-black'}`}>
               Please login to view your generated images
             </p>
             <p className="text-[#8740E5]" onClick={()=>setLoginStatus(true)}>

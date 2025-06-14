@@ -9,6 +9,7 @@ const GlobalProvider = ({ children }: { children: ReactNode }) => {
   
   const [authenticated, setAuthenticated] = useState<boolean>(false);
   const [loginStatus, setLoginStatus] = useState<boolean>(false);
+  const [profileImage,setProfileImage] = useState<string>();
 
   type Active = {
       Create: boolean;
@@ -34,6 +35,8 @@ const GlobalProvider = ({ children }: { children: ReactNode }) => {
         const response = await axios.post(url, null, {
           withCredentials: true,
         });
+        setProfileImage(response?.data?.profileImage);
+        console.log(response?.data)
         console.log("User is authenticated");
         setAuthenticated(true);
       } catch (error) {
@@ -49,7 +52,7 @@ const GlobalProvider = ({ children }: { children: ReactNode }) => {
 
       intervalId = setInterval(() => {
         checkValidation();
-      }, 3000);
+      }, 30000);
        
     }
 
@@ -58,7 +61,7 @@ const GlobalProvider = ({ children }: { children: ReactNode }) => {
 
 
   return (
-    <GlobalContext.Provider value={{ authenticated, setAuthenticated,loginStatus,setLoginStatus ,active,setActive , mode,setMode }}>
+    <GlobalContext.Provider value={{ authenticated, setAuthenticated,loginStatus,setLoginStatus ,active,setActive , mode,setMode , profileImage }}>
       {children}
     </GlobalContext.Provider>
   );

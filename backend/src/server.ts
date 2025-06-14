@@ -71,8 +71,10 @@ app.use(githubMiddleware);
 
 // route which validates users
 app.post('/validate',validate,(req:Request,res:Response)=>{
+  const {profileImage} = (req as any).user;
   res.status(200).json({
     message:'User is authenticated',
+    profileImage:profileImage,
     success:true
   })
 })

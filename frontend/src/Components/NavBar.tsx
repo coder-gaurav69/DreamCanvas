@@ -11,7 +11,8 @@ import { FaUserCircle } from "react-icons/fa";
 
 const NavBar = () => {
   const navigate = useNavigate();
-  const { loginStatus, setLoginStatus } = useContext(GlobalContext);
+  const { loginStatus, setLoginStatus, profileImage } =
+    useContext(GlobalContext);
   const { authenticated, setAuthenticated } = useContext(GlobalContext);
   const [userIconBtn, setUserIconBtn] = useState<Boolean>(false);
   const { active, setActive, mode, setMode } = useContext(GlobalContext);
@@ -61,17 +62,13 @@ const NavBar = () => {
   const handleMode = (value: string): void => {
     switch (value) {
       case "Light":
-        setMode("Light")
+        setMode("Light");
         break;
       case "Dark":
-        setMode(
-         "Dark"
-        );
+        setMode("Dark");
         break;
       default:
-        setMode(
-          "System"
-        );
+        setMode("System");
         break;
     }
   };
@@ -81,13 +78,15 @@ const NavBar = () => {
   }, [mode]);
 
   return (
-    <nav className={`w-full h-[64px] px-[16px] sm:px-[32px] flex justify-between items-center cursor-pointer shadow-[0_1px_10px_1px_#19202B] fixed backdrop-blur-2xl z-10 ${
-            mode === "Light"
-              ? "bg-white"
-              :mode === "Dark"
-              ?"bg-black"
-              :"bg-green-200"
-          }`}>
+    <nav
+      className={`w-full h-[64px] px-[16px] sm:px-[32px] flex justify-between items-center cursor-pointer shadow-[0_1px_10px_1px_#19202B] fixed backdrop-blur-2xl z-10 ${
+        mode === "Light"
+          ? "bg-[rgba(255,255,255,1)]"
+          : mode === "Dark"
+          ? "bg-black"
+          : "bg-white"
+      }`}
+    >
       <h1 className="colorAnimation text-[24px]">DreamCanvas</h1>
 
       {/* for larger devices */}
@@ -96,20 +95,23 @@ const NavBar = () => {
         <Link
           to={"/"}
           className={`py-[8px] px-[12px] ml-[32px] ${
-            !active.Create ? mode === "Light"
-              ? "bg-white"
-              :mode === "Dark"
-              ?"hover:bg-[#18181A]"
-              :"bg-green-200":''
+            !active.Create
+              ? mode === "Light"
+                ? "bg-white"
+                : mode === "Dark"
+                ? "hover:bg-[#18181A]"
+                : "text-black"
+            :""
           }
            hover:text-[#6D28D9] ${
-            active.Create ? "text-[#6D28D9]" :
-              mode === "Light"
-                ? "text-black"
-                :mode === "Dark"
-                ?"text-white"
-                :"bg-green-200"
-            }
+             active.Create
+               ? "text-[#6D28D9]"
+               : mode === "Light"
+               ? "text-black"
+               : mode === "Dark"
+               ? "text-white"
+               : "bg-white"
+           }
           } ${
             active.Create ? "[box-shadow:0px_2px_0px_#6D28D9]" : ""
           } rounded-[10px]`}
@@ -123,22 +125,25 @@ const NavBar = () => {
         <Link
           to={"/gallery"}
           className={`py-[8px] px-[12px] ml-[32px] ${
-            !active.Gallery ? mode === "Light"
-              ? "bg-white"
-              :mode === "Dark"
-              ?"hover:bg-[#18181A]"
-              :"bg-green-200":''
+            !active.Gallery
+              ? mode === "Light"
+                ? "bg-white"
+                : mode === "Dark"
+                ? "hover:bg-[#18181A]"
+                : "bg-white"
+              : ""
           }
           } rounded-[10px] hover:text-[#6D28D9] ${
             active.Gallery ? "[box-shadow:0px_2px_0px_#6D28D9]" : ""
           } ${
-            active.Gallery ? "text-[#6D28D9]" :
-              mode === "Light"
-                ? "text-black"
-                :mode === "Dark"
-                ?"text-white"
-                :"bg-green-200"
-            }`}
+            active.Gallery
+              ? "text-[#6D28D9]"
+              : mode === "Light"
+              ? "text-black"
+              : mode === "Dark"
+              ? "text-white"
+              : "bg-white text-black"
+          }`}
           data-key="Gallery"
           onClick={handleActive}
         >
@@ -148,12 +153,13 @@ const NavBar = () => {
         {/* Theme Toggle */}
         <div
           className={`flex items-center justify-center w-[32px] h-[32px] ml-[30px] rounded-full shadow-[0_0_0_0.3px_#6D28D9]
-           ${mode === "Light"
-                ? "text-black hover:bg-[rgba(0,0,0,0.1)]"
-                :mode === "Dark"
-                ?"text-white hover:bg-[#18181A]"
-                :"bg-green-200"
-            } hover:text-[#6D28D9] transition-all duration-500 text-[12px]`}
+           ${
+             mode === "Light"
+               ? "text-black hover:bg-[rgba(0,0,0,0.1)]"
+               : mode === "Dark"
+               ? "text-white hover:bg-[#18181A]"
+               : "bg-white text-black hover:bg-[rgba(0,0,0,0.1)]"
+           } hover:text-[#6D28D9] transition-all duration-500 text-[12px]`}
           onClick={(e) => {
             e.stopPropagation();
             setToggleBtn((prev) => !prev);
@@ -161,7 +167,13 @@ const NavBar = () => {
             setUserIconBtn(false);
           }}
         >
-          {mode == 'Light'?<CiLight className="text-lg" />:mode=='Dark'?<MdOutlineDarkMode className="text-lg"/>:<HiMiniComputerDesktop className="text-lg"/>}
+          {mode == "Light" ? (
+            <CiLight className="text-lg" />
+          ) : mode == "Dark" ? (
+            <MdOutlineDarkMode className="text-lg" />
+          ) : (
+            <HiMiniComputerDesktop className="text-lg" />
+          )}
           {/* <FaRegMoon /> */}
         </div>
 
@@ -169,7 +181,7 @@ const NavBar = () => {
           <div
             className={`flex flex-col absolute top-[70px] ${
               !authenticated ? "right-[190px]" : "right-10"
-            } text-white shadow-[0_0_0_0.3px_#6D28D9] p-[3px] rounded-[10px] bg-[black] z-10`}
+            } text-white shadow-[0_0_0_0.3px_#6D28D9] p-[3px] rounded-[10px] ${mode=="Light"?"bg-[rgba(0,0,0,0.7)]":"bg-[black]"} z-10`}
           >
             <div
               className="flex gap-3 items-center hover:bg-[rgba(255,255,255,0.2)] py-2 pr-8 pl-2 rounded-[10px]"
@@ -199,12 +211,13 @@ const NavBar = () => {
           <div className="flex">
             {/* Login Button */}
             <div
-              className={`py-[8px] px-[16px] ml-[32px] ${mode === "Light"
-                ? "bg-white text-black"
-                :mode === "Dark"
-                ?"bg-[#18181A] text-white"
-                :"bg-green-200 text-green"
-            }   rounded-[10px] hover:text-[#6D28D9]`}
+              className={`py-[8px] px-[16px] ml-[32px] ${
+                mode === "Light"
+                  ? "bg-white text-black"
+                  : mode === "Dark"
+                  ? "bg-[#18181A] text-white"
+                  : "bg-white text-black"
+              }   rounded-[10px] hover:text-[#6D28D9]`}
               onClick={() => setLoginStatus(true)}
             >
               Login
@@ -234,12 +247,23 @@ const NavBar = () => {
               setToggleBtn(false);
             }}
           >
-            <FaUserCircle className={`${mode === "Light"
-                ? "text-black"
-                :mode === "Dark"
-                ?"text-white"
-                :"bg-green-200"
-            }`} />
+            {profileImage ? (
+              <img
+                src={profileImage}
+                alt="Profile"
+                className="profile-img rounded-full w-[35px] h-[35px]"
+              />
+            ) : (
+              <FaUserCircle
+                className={`${
+                  mode === "Light"
+                    ? "text-[green]"
+                    : mode === "Dark"
+                    ? "text-white"
+                    : "bg-green-200"
+                }`}
+              />
+            )}
           </div>
         )}
 
@@ -263,34 +287,49 @@ const NavBar = () => {
       <div className="md:hidden flex items-center">
         {/* Theme Toggle */}
         <div
-          className={`flex items-center justify-center w-[36px] h-[36px] ml-[32px] rounded-full border-[1px] border-[#6D28D9] hover:text-[#6D28D9] ${mode === "Light"
-                ? "text-black hover:bg-[rgba(0,0,0,0.1)]"
-                :mode === "Dark"
-                ?"text-white hover:bg-[#18181A]"
-                :"bg-green-200"
-            } transition-all duration-500 text-[12px]}`}
+          className={`flex items-center justify-center w-[36px] h-[36px] ml-[32px] rounded-full border-[1px] border-[#6D28D9] hover:text-[#6D28D9] ${
+            mode === "Light"
+              ? "text-black hover:bg-[rgba(0,0,0,0.1)]"
+              : mode === "Dark"
+              ? "text-white hover:bg-[#18181A]"
+              : "bg-green-200"
+          } transition-all duration-500 text-[12px]}`}
           onClick={(e) => {
             e.stopPropagation();
             setToggleBtn((prev) => !prev);
             setToggleMenu(false);
           }}
         >
-          {mode == 'Light'?<CiLight className="text-lg" />:mode=='Dark'?<MdOutlineDarkMode className="text-lg"/>:<HiMiniComputerDesktop className="text-lg"/>}
+          {mode == "Light" ? (
+            <CiLight className="text-lg" />
+          ) : mode == "Dark" ? (
+            <MdOutlineDarkMode className="text-lg" />
+          ) : (
+            <HiMiniComputerDesktop className="text-lg" />
+          )}
           {/* <FaRegMoon /> */}
         </div>
 
         {toggleBtn && (
           <div className="flex flex-col  w-full absolute top-[65px] right-0 text-white shadow-[0_0_0_0.3px_#6D28D9] p-[3px] bg-[black] z-10">
-
-            <div className="flex gap-3 items-center hover:bg-[rgba(255,255,255,0.2)] py-2 pr-8 pl-2 rounded-[10px]" onClick={() => handleMode("Light")}>
+            <div
+              className="flex gap-3 items-center hover:bg-[rgba(255,255,255,0.2)] py-2 pr-8 pl-2 rounded-[10px]"
+              onClick={() => handleMode("Light")}
+            >
               <CiLight />
               <p>Light</p>
             </div>
-            <div className="flex gap-3 items-center hover:bg-[rgba(255,255,255,0.2)] py-2 pr-8 pl-2 rounded-[10px]" onClick={() => handleMode("Dark")}>
+            <div
+              className="flex gap-3 items-center hover:bg-[rgba(255,255,255,0.2)] py-2 pr-8 pl-2 rounded-[10px]"
+              onClick={() => handleMode("Dark")}
+            >
               <MdOutlineDarkMode />
               <p>Dark</p>
             </div>
-            <div className="flex gap-3 items-center hover:bg-[rgba(255,255,255,0.2)] py-2 pr-8 pl-2 rounded-[10px]" onClick={() => handleMode("System")}>
+            <div
+              className="flex gap-3 items-center hover:bg-[rgba(255,255,255,0.2)] py-2 pr-8 pl-2 rounded-[10px]"
+              onClick={() => handleMode("System")}
+            >
               <HiMiniComputerDesktop />
               <p>System</p>
             </div>
@@ -299,12 +338,13 @@ const NavBar = () => {
 
         {/* Hamburger Menu */}
         <div
-          className={`flex items-center p-[8px] ml-[8px] text-[24px] ${mode === "Light"
-                ? "text-black"
-                :mode === "Dark"
-                ?"text-white"
-                :"text-green"
-            }`}
+          className={`flex items-center p-[8px] ml-[8px] text-[24px] ${
+            mode === "Light"
+              ? "text-black"
+              : mode === "Dark"
+              ? "text-white"
+              : "text-green"
+          }`}
           onClick={(e) => {
             e.stopPropagation();
             setToggleMenu((prev) => !prev);
@@ -317,7 +357,9 @@ const NavBar = () => {
 
       {/* Hamburger Dropdown Menu */}
       {toggleMenu && (
-        <div className={`flex flex-col absolute top-[60px] left-0 w-[100%] p-[8px_8px_12px_8px] md:hidden text-white bg-black`}>
+        <div
+          className={`flex flex-col absolute top-[60px] left-0 w-[100%] p-[8px_8px_12px_8px] md:hidden text-white bg-black`}
+        >
           <Link
             to={"/"}
             className={`py-[8px] px-[12px] mt-[4px] rounded-[10px] hover:text-[rgb(109,40,217)] ${

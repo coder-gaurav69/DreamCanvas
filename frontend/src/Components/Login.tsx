@@ -11,6 +11,7 @@ import { GlobalContext } from '../ContextApi/globalVariable';
 const Login = () => {
 
   const {loginStatus,setLoginStatus,setAuthenticated} = useContext(GlobalContext);
+  const {mode} = useContext(GlobalContext);
 
 
   type field = {
@@ -98,18 +99,18 @@ const Login = () => {
     const url = `${import.meta.env.VITE_BACKEND_URL}/auth/github`;
     window.open(url, "_self");
   };
-  
+  // bg-[#09090B]
   
   return (
     <div
       className={`w-full h-screen ${
         loginStatus || isClosing ? "flex" : "hidden"
-      } justify-center items-center fixed bg-[rgba(0,0,0,0.6)] backdrop-blur-[2px] z-10 top-0 left-0 px-[30px]`}
+      } justify-center items-center fixed bg-[rgba(0,0,0,0.7)] ${mode=='Light'?"backdrop-blur-[7px]":"backdrop-blur-[2px]"} z-10 top-0 left-0 px-[30px]`}
     >
       <div
         className={`${
           isClosing ? "zoomOut" : "zoomIn"
-        } w-full max-w-[450px] py-8 px-6 mx-auto flex flex-col justify-center items-center shadow-[0_0_0_0.3px_rgba(255,255,255,0.5)] z-20 rounded-[10px] bg-[#09090B] relative`}
+        } w-full max-w-[450px] py-8 px-6 mx-auto flex flex-col justify-center items-center shadow-[0_0_0_0.3px_rgba(255,255,255,0.5)] z-20 rounded-[10px] ${mode == 'Light'?"bg-[rgba(255,255,255,0.2)] backdrop-blur-[1px]":"bg-[#09090B]"} relative`}
       >
         {/* cross btn */}
         <div
@@ -129,7 +130,7 @@ const Login = () => {
 
         {/* Form */}
         <form
-          className="w-full text-sm sm:text-base bg-black/20 backdrop-blur"
+          className="w-full text-sm sm:text-base"
           onSubmit={handleSubmit}
           autoComplete="off"
         >
@@ -145,7 +146,7 @@ const Login = () => {
               name="email"
               value={field.email}
               placeholder="Choose a email"
-              className="p-2 mt-2 focus:shadow-[0_0_0_1px_rgba(109,40,217,1)] rounded-lg outline-none shadow-[0_0_0_0.5px_rgba(109,40,217,0.3)] bg-black"
+              className={`p-2 mt-2 focus:shadow-[0_0_0_1px_rgba(109,40,217,1)] rounded-lg outline-none shadow-[0_0_0_0.5px_rgba(109,40,217,0.3)] ${mode=='Light'?"bg-[rgba(255,255,255,0.1)]":"bg-black"}`}
               onChange={handleChange}
               autoComplete="off"
             />
@@ -159,7 +160,7 @@ const Login = () => {
               id="userPassword"
               name="userPassword"
               placeholder="Create a password"
-              className="p-2 mt-2 focus:shadow-[0_0_0_1px_rgba(109,40,217,1)] rounded-lg outline-none shadow-[0_0_0_0.5px_rgba(109,40,217,0.3)] bg-black"
+              className={`p-2 mt-2 focus:shadow-[0_0_0_1px_rgba(109,40,217,1)] rounded-lg outline-none shadow-[0_0_0_0.5px_rgba(109,40,217,0.3)] ${mode=='Light'?"bg-[rgba(255,255,255,0.1)]":"bg-black"}`}
               value={field.userPassword}
               onChange={handleChange}
               autoComplete="new-password"
