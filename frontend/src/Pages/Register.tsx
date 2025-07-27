@@ -54,7 +54,7 @@ const Register = () => {
       };
       const result = await axios.post(url, payload ,{
         withCredentials:true
-      });
+      }) as any;
       setAuthenticated(true);
       setActive({
         Create:true,

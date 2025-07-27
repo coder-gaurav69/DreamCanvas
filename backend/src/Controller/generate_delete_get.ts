@@ -36,7 +36,7 @@ const generateImage = async (req: Request, res: Response): Promise<any> => {
       headers: {
         "Content-Type": "application/json",
       },
-    });
+    }) as any;
 
     if (
       !response.data ||
@@ -83,6 +83,7 @@ const generateImage = async (req: Request, res: Response): Promise<any> => {
     });
   } catch (error) {
     const errMsg = error instanceof Error ? error.message : String(error);
+    console.log(error)
     res.status(500).json({
       message: "Internal Server Error",
       status: "not ok",

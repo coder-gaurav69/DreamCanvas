@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { createContext, useState, ReactNode, useEffect } from "react";
+import { createContext, useState, ReactNode, useEffect } from "react";
 
 // Create the context
 const GlobalContext = createContext<any>(null);
@@ -21,9 +21,9 @@ const GlobalProvider = ({ children }: { children: ReactNode }) => {
       Gallery: false,
   });
 
-  type Mode = 'Light' | "Dark" | 'System';
+  type Mode = 'Light' | "Dark";
 
-  const [mode,setMode] = useState<Mode>("Light");
+  const [mode,setMode] = useState<Mode>("Dark");
 
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const GlobalProvider = ({ children }: { children: ReactNode }) => {
         const response = await axios.post(url, null, {
           withCredentials: true,
         });
-        setProfileImage(response?.data?.profileImage);
+        setProfileImage((response?.data as any)?.profileImage);
         console.log(response?.data)
         console.log("User is authenticated");
         setAuthenticated(true);

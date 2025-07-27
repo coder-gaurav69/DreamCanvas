@@ -31,7 +31,7 @@ const Create = () => {
             'Content-Type': 'application/json',
           },
           withCredentials: true,
-        });
+        }) as any;
         console.log(result);
         setImageUrl(result.data.fileName);
         console.log(result.data.fileName)
@@ -68,7 +68,7 @@ const Create = () => {
         <h1 className='h1 colorAnimation text-4xl lg:text-5xl mb-[16px] leading-tight'>
           Create stunning images with AI
         </h1>
-        <p className={`text-[20px] font-semibold ${mode === 'Light'?'text-[rgba(0,0,0,0.7)]':mode === "Dark"?'text-[rgba(255,255,255,0.5)]':'text-black'}`}>
+        <p className={`text-[20px] font-semibold ${mode === 'Light'?'text-[rgba(0,0,0,0.7)]':'text-[rgba(255,255,255,0.5)]'}`}>
           Transform your ideas into beautiful visuals with our powerful text-to-image generator.
         </p>
       </div>
@@ -76,12 +76,12 @@ const Create = () => {
       <div className={`p-6 w-full flex flex-col items-center justify-center hover:translate-y-[-5px] transition-all duration-400 ${mode =='Light'? "shadow-[0_0_0_0.5px_rgb(23,13,41)]":"shadow-[0_0_0_1px_rgb(23,13,41)]"} rounded-[10px] mb-[40px]`}>
 
 
-        <h1 className={`text-[18px] w-full ${error ? 'text-[#7E1C1C]' : mode === 'Light'?'text-[rgba(0,0,0,0.8)]':mode === "Dark"?'text-white':'text-black'} font-medium `}>
+        <h1 className={`text-[18px] w-full ${error ? 'text-[#7E1C1C]' : mode === 'Light'?'text-[rgba(0,0,0,0.8)]':'text-white'} font-medium `}>
           Describe your image
         </h1>
         <textarea
           placeholder='A serene lake surrounded by mountains at sunset....'
-          className={`w-full p-[8px_12px] mt-[8px] min-h-[100px] outline-none focus:shadow-[inset_0_0_0_2px_#8740E5] rounded-[10px] ${mode === 'Light'?'text-black shadow-[0_0_0_0.5px_rgb(23,13,41)]':mode === "Dark"?'text-white shadow-[0_0_0_1px_rgb(23,13,41)]':'text-black shadow-[0_0_0_0.5px_rgb(23,13,41)]'}`}
+          className={`w-full p-[8px_12px] mt-[8px] min-h-[100px] outline-none focus:shadow-[inset_0_0_0_2px_#8740E5] rounded-[10px] ${mode === 'Light'?'text-black shadow-[0_0_0_0.5px_rgb(23,13,41)]':'text-white shadow-[0_0_0_1px_rgb(23,13,41)]'}`}
           onChange={(e) => setInput(e.target.value)}
         ></textarea>
 
@@ -90,8 +90,8 @@ const Create = () => {
         <div className='w-full grid grid-cols-1 md:grid-cols-3 mt-[24px] gap-5'>
           {/* Style */}
           <div>
-            <p className={`font-medium ${mode === 'Light'?'text-black':mode === "Dark"?'text-white':'text-black'}`}>Style</p>
-            <select className={`focus:shadow-[inset_0_0_0_2px_#8740E5] rounded-[10px] p-[8px_12px] mt-[8px] outline-none w-full ${mode === 'Light'?'text-black shadow-[0_0_0_0.5px_rgb(23,13,41)]':mode === "Dark"?'bg-black text-white shadow-[0_0_0_1px_rgb(23,13,41)]':'text-black shadow-[0_0_0_1px_rgb(23,13,41)]'}`}>
+            <p className={`font-medium ${mode === 'Light'?'text-black':'text-white'}`}>Style</p>
+            <select className={`focus:shadow-[inset_0_0_0_2px_#8740E5] rounded-[10px] p-[8px_12px] mt-[8px] outline-none w-full ${mode === 'Light'?'text-black shadow-[0_0_0_0.5px_rgb(23,13,41)]':'bg-black text-white shadow-[0_0_0_1px_rgb(23,13,41)]'}`}>
               <option value="Realistic">Realistic</option>
               <option value="Artistic">Artistic</option>
               <option value="3D Render">3D Render</option>
@@ -102,9 +102,9 @@ const Create = () => {
 
           {/* Size */}
           <div>
-            <p className={`font-medium ${mode === 'Light'?'text-black':mode === "Dark"?'text-white':'text-black'}`}>Size</p>
+            <p className={`font-medium ${mode === 'Light'?'text-black':'text-white'}`}>Size</p>
 
-            <select className={`focus:shadow-[inset_0_0_0_2px_#8740E5] rounded-[10px] p-[8px_12px] mt-[8px] outline-none w-full  ${mode === 'Light'?'text-black shadow-[0_0_0_0.5px_rgb(23,13,41)]':mode === "Dark"?'bg-black text-white shadow-[0_0_0_1px_rgb(23,13,41)]':'text-black shadow-[0_0_0_1px_rgb(23,13,41)]'}`}>
+            <select className={`focus:shadow-[inset_0_0_0_2px_#8740E5] rounded-[10px] p-[8px_12px] mt-[8px] outline-none w-full  ${mode === 'Light'?'text-black shadow-[0_0_0_0.5px_rgb(23,13,41)]':'bg-black text-white shadow-[0_0_0_1px_rgb(23,13,41)]'}`}>
               <option value="Square (1:1)">Square (1:1)</option>
               <option value="Landscape (16:9)">Landscape (16:9)</option>
               <option value="Portrait (9:16)">Portrait (9:16)</option>
@@ -114,8 +114,8 @@ const Create = () => {
 
           {/* Quality */}
           <div>
-            <p className={`font-medium ${mode === 'Light'?'text-black':mode === "Dark"?'text-white':'text-black'}`}>Quality</p>
-            <select className={`focus:shadow-[inset_0_0_0_2px_#8740E5] rounded-[10px] p-[8px_12px] mt-[8px] outline-none w-full ${mode === 'Light'?'text-black shadow-[0_0_0_0.5px_rgb(23,13,41)]':mode === "Dark"?'bg-black text-white shadow-[0_0_0_1px_rgb(23,13,41)]':'text-black shadow-[0_0_0_1px_rgb(23,13,41)]'}`}>
+            <p className={`font-medium ${mode === 'Light'?'text-black':'text-white'}`}>Quality</p>
+            <select className={`focus:shadow-[inset_0_0_0_2px_#8740E5] rounded-[10px] p-[8px_12px] mt-[8px] outline-none w-full ${mode === 'Light'?'text-black shadow-[0_0_0_0.5px_rgb(23,13,41)]':'bg-black text-white shadow-[0_0_0_1px_rgb(23,13,41)]'}`}>
               <option value="Standard">Standard</option>
               <option value="HD">HD</option>
               <option value="Ultra">Ultra</option>
@@ -142,7 +142,7 @@ const Create = () => {
           <div className={`p-[24px] ${mode=='Light'?'shadow-[0_0_0_0.5px_rgb(23,13,41)]':'shadow-[0_0_0_1px_rgb(23,13,41)]'} rounded-[10px] min-h-[200px] flex items-center justify-center`}>
 
             {!authenticated && <div className={`${mode=='Light'?'shadow-[0_0_0_0.5px_rgb(23,13,41)]':'shadow-[0_0_0_1px_rgb(23,13,41)]'} rounded-[10px] p-[32px] justify-center flex flex-col items-center w-full`}>
-              <p className={`mb-[16px] ${mode === 'Light'?'text-[rgba(0,0,0,0.6)]':mode === "Dark"?'text-[rgba(255,255,255,0.5)]':'text-black'}`}>Please login to view your generated images</p>
+              <p className={`mb-[16px] ${mode === 'Light'?'text-[rgba(0,0,0,0.6)]':'text-[rgba(255,255,255,0.5)]'}`}>Please login to view your generated images</p>
               <p  className='text-[#8740E5]' onClick={()=>setLoginStatus(true)}>Login Now</p>
             </div>}
 
