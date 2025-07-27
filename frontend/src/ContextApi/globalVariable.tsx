@@ -10,6 +10,7 @@ const GlobalProvider = ({ children }: { children: ReactNode }) => {
   const [authenticated, setAuthenticated] = useState<boolean>(false);
   const [loginStatus, setLoginStatus] = useState<boolean>(false);
   const [profileImage,setProfileImage] = useState<string>();
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   type Active = {
       Create: boolean;
@@ -61,7 +62,7 @@ const GlobalProvider = ({ children }: { children: ReactNode }) => {
 
 
   return (
-    <GlobalContext.Provider value={{ authenticated, setAuthenticated,loginStatus,setLoginStatus ,active,setActive , mode,setMode , profileImage }}>
+    <GlobalContext.Provider value={{ authenticated, setAuthenticated,loginStatus,setLoginStatus ,active,setActive , mode,setMode , profileImage , imageUrl, setImageUrl }}>
       {children}
     </GlobalContext.Provider>
   );

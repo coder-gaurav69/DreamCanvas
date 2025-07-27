@@ -12,7 +12,7 @@ import { AI_MODEL_URL } from "../config.js";
 const generateImage = async (req: Request, res: Response): Promise<any> => {
   const { input } = req.body;
 
-  const {id,email} = (req as any).user;
+  const { id, email } = (req as any).user;
 
   if (!input || !id || !email) {
     return res
@@ -21,8 +21,7 @@ const generateImage = async (req: Request, res: Response): Promise<any> => {
   }
 
   try {
-
-    const folderName = `(${email?.split('@')[0]})` + id.toString();;
+    const folderName = `(${email?.split("@")[0]})` + id.toString();
 
     const url = AI_MODEL_URL;
 
@@ -32,11 +31,11 @@ const generateImage = async (req: Request, res: Response): Promise<any> => {
       width: 512,
       height: 512,
     };
-    const response = await axios.post(url, payload, {
+    const response = (await axios.post(url, payload, {
       headers: {
         "Content-Type": "application/json",
       },
-    }) as any;
+    })) as any;
 
     if (
       !response.data ||
@@ -62,10 +61,10 @@ const generateImage = async (req: Request, res: Response): Promise<any> => {
 
     // Save to DB - appending to images array
     await userModel.updateOne(
-      { _id:id , email },
+      { _id: id, email },
       {
         $push: {
-          "generatedImages.images": {
+          generatedImages: {
             imageUrl: result.imageUrl,
             publicId: result.public_id,
           },
@@ -83,7 +82,7 @@ const generateImage = async (req: Request, res: Response): Promise<any> => {
     });
   } catch (error) {
     const errMsg = error instanceof Error ? error.message : String(error);
-    console.log(error)
+    console.log(error);
     res.status(500).json({
       message: "Internal Server Error",
       status: "not ok",
@@ -95,7 +94,7 @@ const generateImage = async (req: Request, res: Response): Promise<any> => {
 
 const deleteImage = async (req: Request, res: Response): Promise<any> => {
   const { public_id } = req.body;
-  const { id , email } = (req as any).user;
+  const { id, email } = (req as any).user;
 
   if (!public_id) {
     return res.status(400).json({
@@ -105,27 +104,29 @@ const deleteImage = async (req: Request, res: Response): Promise<any> => {
   }
 
   try {
-    // Check if the image exists before deletion (optional safety check)
+    // Check if the image exists
     const user = await userModel.findOne({
       _id: id,
       email,
-      "generatedImages.images.publicId": public_id,
+      "generatedImages.publicId": public_id,
     });
 
     if (!user) {
-      return res.status(400).json({
+      return res.status(404).json({
         message: "Image not found in the database",
         success: false,
       });
     }
 
+    // Delete from cloudinary or your storage
     await deleteFileFromCloudinary(public_id);
 
+    // Remove image from user's generatedImages array
     await userModel.updateOne(
       { _id: id },
       {
         $pull: {
-          "generatedImages.images": {
+          generatedImages: {
             publicId: public_id,
           },
         },
@@ -146,11 +147,10 @@ const deleteImage = async (req: Request, res: Response): Promise<any> => {
 
 
 const getImages = async (req: Request, res: Response): Promise<any> => {
-  
-  const {id,email} = (req as any).user;
+  const { id, email } = (req as any).user;
 
   try {
-    const result = await userModel.findById({ _id:id , email});
+    const result = await userModel.findById({ _id: id, email }) as any;
 
     if (!result) {
       return res.status(400).json({
@@ -162,7 +162,7 @@ const getImages = async (req: Request, res: Response): Promise<any> => {
     return res.status(200).json({
       message: "Received successfully",
       data: {
-        images: (result as any).generatedImages.images,
+        imagesList: result.generatedImages,
       },
       success: true,
     });

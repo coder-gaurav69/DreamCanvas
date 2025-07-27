@@ -11,6 +11,7 @@ const Gallery = () => {
   type imageObject = {
     imageUrl: string;
     publicId: string;
+    timeStamp: Date;
   };
 
   const [images, setImages] = useState<imageObject[]>([]);
@@ -24,7 +25,17 @@ const Gallery = () => {
           withCredentials: true,
         })) as any;
 
-        setImages(response.data.data.images);
+        let imagesList = response.data.data.imagesList as imageObject[];
+
+        // Ensure timeStamp is a Date before sorting
+        imagesList.sort((a: any, b: any) => {
+          return (
+            new Date(b.timeStamp).getTime() - new Date(a.timeStamp).getTime()
+          );
+        });
+
+        setImages(imagesList);
+
       } catch (error) {
         console.log(error);
       }
@@ -85,6 +96,10 @@ const Gallery = () => {
   // for close the states
   useEffect(() => {
     //on mounting i will set the
+    window.scrollTo({
+      top: 0,
+      behavior: "instant",
+    });
     setActive({
       Create: false,
       Gallery: true,

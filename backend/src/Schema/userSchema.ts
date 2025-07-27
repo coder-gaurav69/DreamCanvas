@@ -25,11 +25,20 @@ const userSchema = new mongoose.Schema({
     type:String,
   },
   generatedImages: {
-    images: {
+  type: [
+    {
+      _id: false,
       imageUrl: String,
       publicId: String,
+      timeStamp: {
+        type: Date,
+        default: Date.now,
+      },
     },
-  },
+  ],
+  default: [], // Optional but good practice to avoid `undefined`
+}
+,
   folderName:{
     type:String,
     unique:true,

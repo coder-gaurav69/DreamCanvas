@@ -16,6 +16,7 @@ const App = () => {
       window.history.replaceState(null, "", window.location.pathname);
     }
   }, []);
+  
 
   return (
     <>
