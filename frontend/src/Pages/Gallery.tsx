@@ -35,7 +35,6 @@ const Gallery = () => {
         });
 
         setImages(imagesList);
-
       } catch (error) {
         console.log(error);
       }
@@ -188,20 +187,20 @@ const Gallery = () => {
 
                 {/* Options menu */}
                 {clickedIndex === index && (
-                  <div className="absolute top-10 right-[-50px] shadow-[0_0_0_0.3px_#6D28D9] p-[3px] rounded-[10px] bg-[black] z-10">
-                    <div
+                  <div className="absolute top-10 right-[-50px] shadow-[0_0_0_0.3px_#6D28D9] p-[3px] rounded-[10px] bg-[black] z-10 flex flex-col ">
+                    <button
                       className="hover:bg-[rgba(255,255,255,0.2)] py-2 pr-8 pl-2 rounded-[10px]"
                       onClick={() => handleDownload(imageUrl)}
                     >
                       Download
-                    </div>
+                    </button>
 
-                    <div
+                    <button
                       className="hover:bg-[rgba(255,255,255,0.2)] py-2 pr-8 pl-2 rounded-[10px]"
                       onClick={() => handleDelete(publicId)}
                     >
                       Delete
-                    </div>
+                    </button>
                   </div>
                 )}
               </div>
