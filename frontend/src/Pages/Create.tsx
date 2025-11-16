@@ -8,12 +8,12 @@ const Create = () => {
   const [input, setInput] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [loader, setLoader] = useState<boolean>(false);
-  const { authenticated, setLoginStatus, mode , imageUrl, setImageUrl } = useContext(GlobalContext);
-  
+  const { authenticated, setLoginStatus, mode, imageUrl, setImageUrl } =
+    useContext(GlobalContext);
 
-  // generate api call  
+  // generate api call
   const handleGenerate = async () => {
-    if (input.trim().length < 5) {
+    if (input.trim().length < 3) {
       setError("Prompt must be at least 5 characters");
     } else {
       try {
@@ -31,7 +31,7 @@ const Create = () => {
         })) as any;
 
         setImageUrl(result.data.fileName);
-        console.log(result.data.fileName);
+        // console.log(result.data.fileName);
         setLoader(false);
       } catch (error: any) {
         const errMessage =
@@ -45,7 +45,7 @@ const Create = () => {
   };
 
   useEffect(() => {
-    if(imageUrl){
+    if (imageUrl) {
       window.scrollTo({
         top: 600,
         behavior: "smooth",
@@ -56,22 +56,21 @@ const Create = () => {
   useEffect(() => {
     const h1Element = document.querySelector(".h1") as HTMLElement | null;
     if (h1Element) {
-      if (input.trim().length >= 5) {
+      if (input.trim().length >= 3) {
         h1Element.style.color = "white";
         setError(""); // clear error when input is valid
       } else if (error) {
         h1Element.style.color = "red";
       }
     }
-  }, [input, error]);
+  }, [input]);
 
-
-  useEffect(()=>{
+  useEffect(() => {
     window.scrollTo({
-      top:0,
-      behavior:"instant"
-    })
-  },[])
+      top: 0,
+      behavior: "instant",
+    });
+  }, []);
 
   return (
     <div className="pt-[95px] pb-[40px] w-full lg:w-5xl m-auto flex flex-col items-center justify-center px-4 sm:px-[32px]">
@@ -101,9 +100,8 @@ const Create = () => {
       >
         <h1
           className={`text-[18px] w-full ${
-            error
-              ? "text-[#7E1C1C]"
-              : mode === "Light"
+           
+              mode === "Light"
               ? "text-[rgba(0,0,0,0.8)]"
               : "text-white"
           } font-medium `}

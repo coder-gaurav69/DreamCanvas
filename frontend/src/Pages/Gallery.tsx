@@ -36,7 +36,7 @@ const Gallery = () => {
 
         setImages(imagesList);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
 
@@ -46,7 +46,7 @@ const Gallery = () => {
   // for deleting images
   const handleDelete = async (publicId: string): Promise<void> => {
     try {
-      console.log(publicId);
+      // console.log(publicId);
       const url = `${import.meta.env.VITE_BACKEND_URL}/delete-image`;
 
       const config = {
@@ -59,10 +59,9 @@ const Gallery = () => {
       const response = await axios.delete(url, config);
 
       setImages(images.filter((e, index) => e.publicId != publicId));
-      console.log("chl gaya function");
-      console.log(response);
+      // console.log(response);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

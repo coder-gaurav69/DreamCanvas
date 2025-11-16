@@ -37,11 +37,11 @@ const GlobalProvider = ({ children }: { children: ReactNode }) => {
           withCredentials: true,
         });
         setProfileImage((response?.data as any)?.profileImage);
-        console.log(response?.data)
-        console.log("User is authenticated");
+        // console.log(response?.data)
+        // console.log("User is authenticated");
         setAuthenticated(true);
       } catch (error) {
-        console.error("User is NOT authenticated", error);
+        // console.error("User is NOT authenticated", error);
         setAuthenticated(false);
       }
     };
