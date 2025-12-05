@@ -49,7 +49,7 @@ function detectMime(raw: Buffer): string {
   return "image/png"; // default
 }
 
-const generateImage = async (req: Request, res: Response) => {
+const generateImage = async (req: Request, res: Response):Promise<any> => {
   try {
     const prompt = req.body?.input;
     const style = req.body?.style as keyof typeof AI_MODEL_MAP | undefined;

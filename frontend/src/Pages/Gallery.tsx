@@ -133,7 +133,7 @@ const Gallery = () => {
 
         {authenticated && images.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-5">
-            {images.map(({ imageUrl, publicId }, index) => (
+            {images.map(({ imageUrl, publicId }:{ imageUrl: string; publicId: string }, index:any) => (
               <div key={index} className="relative">
                 <img
                   className="rounded-[10px]"
