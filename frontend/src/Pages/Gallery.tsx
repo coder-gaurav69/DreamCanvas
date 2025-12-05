@@ -4,44 +4,9 @@ import { GlobalContext } from "../ContextApi/globalVariable";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 
 const Gallery = () => {
-  const { authenticated, setActive, mode, setLoginStatus } =
+  const { authenticated, setActive, mode, setLoginStatus, images, setImages , handleGetAllImages} =
     useContext(GlobalContext);
   const [clickedIndex, setClickedIndex] = useState<number | null>(null);
-
-  type imageObject = {
-    imageUrl: string;
-    publicId: string;
-    timeStamp: Date;
-  };
-
-  const [images, setImages] = useState<imageObject[]>([]);
-
-  useEffect(() => {
-    const handleGetAllImages = async () => {
-      try {
-        const url = `${import.meta.env.VITE_BACKEND_URL}/getImages`;
-
-        const response = (await axios.get(url, {
-          withCredentials: true,
-        })) as any;
-
-        let imagesList = response.data.data.imagesList as imageObject[];
-
-        // Ensure timeStamp is a Date before sorting
-        imagesList.sort((a: any, b: any) => {
-          return (
-            new Date(b.timeStamp).getTime() - new Date(a.timeStamp).getTime()
-          );
-        });
-
-        setImages(imagesList);
-      } catch (error) {
-        // console.log(error);
-      }
-    };
-
-    handleGetAllImages();
-  }, []);
 
   // for deleting images
   const handleDelete = async (publicId: string): Promise<void> => {
@@ -58,8 +23,8 @@ const Gallery = () => {
 
       const response = await axios.delete(url, config);
 
-      setImages(images.filter((e, index) => e.publicId != publicId));
-      // console.log(response);
+      setImages(images.filter((e: any, index: any) => e.publicId != publicId));
+      console.log(response);
     } catch (error) {
       console.error(error);
     }
@@ -157,7 +122,10 @@ const Gallery = () => {
             >
               Please login to view your generated images
             </p>
-            <p className="text-[#8740E5]" onClick={() => setLoginStatus(true)}>
+            <p
+              className="text-[#8740E5] cursor-pointer"
+              onClick={() => setLoginStatus(true)}
+            >
               Login Now
             </p>
           </div>

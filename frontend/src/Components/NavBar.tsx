@@ -79,7 +79,7 @@ const NavBar = () => {
         mode === "Light" ? "bg-[rgba(255,255,255,1)]" : "bg-black"
       }`}
     >
-      <h1 className="colorAnimation text-[24px]">DreamCanvas</h1>
+      <h1 className="colorAnimation text-[24px]" onClick={()=>navigate('/')}>DreamCanvas</h1>
 
       {/* for larger devices */}
       <div className="hidden md:flex flex items-center justify-center">

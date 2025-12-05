@@ -6,9 +6,10 @@ import { GlobalContext } from "../ContextApi/globalVariable";
 
 const Create = () => {
   const [input, setInput] = useState<string>("");
+  const [style,setStyle] = useState<string>("Realistic");
   const [error, setError] = useState<string>("");
   const [loader, setLoader] = useState<boolean>(false);
-  const { authenticated, setLoginStatus, mode, imageUrl, setImageUrl } =
+  const { authenticated, setLoginStatus, mode, imageUrl, setImageUrl ,loginStatus , images} =
     useContext(GlobalContext);
 
   // generate api call
@@ -22,6 +23,7 @@ const Create = () => {
         const url = `${import.meta.env.VITE_BACKEND_URL}/generate-image`;
         const payload = {
           input: input,
+          style:style
         };
         const result = (await axios.post(url, payload, {
           headers: {
@@ -31,8 +33,14 @@ const Create = () => {
         })) as any;
 
         setImageUrl(result.data.fileName);
-        // console.log(result.data.fileName);
-        setLoader(false);
+        setTimeout(()=>{
+          setLoader(false);
+          window.scrollTo({
+            top: 600,
+            behavior: "smooth",
+          });
+        },1000)
+        
       } catch (error: any) {
         const errMessage =
           error?.response?.data?.message || "An error occurred during Regiter.";
@@ -44,14 +52,14 @@ const Create = () => {
     }
   };
 
+
   useEffect(() => {
-    if (imageUrl) {
-      window.scrollTo({
-        top: 600,
-        behavior: "smooth",
-      });
+    if(images.length > 0){
+      setImageUrl(images[0].imageUrl);
+      // console.log(images[0].imageUrl);
     }
-  }, [imageUrl]);
+  }, [images]);
+
 
   useEffect(() => {
     const h1Element = document.querySelector(".h1") as HTMLElement | null;
@@ -140,6 +148,7 @@ const Create = () => {
                   ? "text-black shadow-[0_0_0_0.5px_rgb(23,13,41)]"
                   : "bg-black text-white shadow-[0_0_0_1px_rgb(23,13,41)]"
               }`}
+              onChange={(e) => setStyle(e.target.value)}
             >
               <option value="Realistic">Realistic</option>
               <option value="Artistic">Artistic</option>
@@ -199,7 +208,14 @@ const Create = () => {
         {/* Generate Button */}
         <button
           className="bg-[#6D28D9] hover:bg-[rgba(109,40,217,0.8)] rounded-[10px] mt-[24px]"
-          onClick={handleGenerate}
+          onClick={()=>{
+            if(authenticated){
+              handleGenerate();
+            }
+            else{
+              setLoginStatus(true);
+            }
+          }}
         >
           {!loader && (
             <div className="flex items-center gap-3 p-[10px_25px] sm:p-[10px_32px]">

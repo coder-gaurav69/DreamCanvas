@@ -1,68 +1,112 @@
 import axios from "axios";
 import { createContext, useState, ReactNode, useEffect } from "react";
 
-// Create the context
 const GlobalContext = createContext<any>(null);
 
-// Provider component
+type ImageObject = {
+  imageUrl: string;
+  publicId: string;
+  timeStamp: Date;
+};
+
 const GlobalProvider = ({ children }: { children: ReactNode }) => {
-  
   const [authenticated, setAuthenticated] = useState<boolean>(false);
   const [loginStatus, setLoginStatus] = useState<boolean>(false);
-  const [profileImage,setProfileImage] = useState<string>();
+  const [profileImage, setProfileImage] = useState<string>();
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [images, setImages] = useState<ImageObject[]>([]);
 
-  type Active = {
-      Create: boolean;
-      Gallery: boolean;
-    };
-
-  const [active, setActive] = useState<Active>({
-      Create: true,
-      Gallery: false,
+  const [active, setActive] = useState({
+    Create: true,
+    Gallery: false,
   });
 
-  type Mode = 'Light' | "Dark";
+  const [mode, setMode] = useState<"Light" | "Dark">("Dark");
 
-  const [mode,setMode] = useState<Mode>("Dark");
+  // ============================
+  // 🔥 FETCH IMAGES FUNCTION
+  // ============================
+  const handleGetAllImages = async () => {
+    try {
+      const url = `${import.meta.env.VITE_BACKEND_URL}/getImages`;
 
+      const response = await axios.get(url, {
+        withCredentials: true,
+      });
 
+      const imagesList = (response as any)?.data?.data?.imagesList ?? [];
+      console.log(response)
+
+      if (!Array.isArray(imagesList)) return;
+
+      const sortedImages = [...imagesList].sort(
+        (a, b) =>
+          new Date(b.timeStamp).getTime() -
+          new Date(a.timeStamp).getTime()
+      );
+
+      setImages(sortedImages);
+    } catch (error) {
+      console.error("⚠ Error fetching images:", error);
+    }
+  };
+
+  // ============================
+  // 🔥 VALIDATE USER AUTH
+  // ============================
   useEffect(() => {
-    let intervalId:any;
+    let intervalId: any;
 
     const checkValidation = async () => {
       try {
         const url = `${import.meta.env.VITE_BACKEND_URL}/validate`;
+
         const response = await axios.post(url, null, {
           withCredentials: true,
         });
-        setProfileImage((response?.data as any)?.profileImage);
-        // console.log(response?.data)
-        // console.log("User is authenticated");
+
+        setProfileImage((response as any)?.data?.profileImage);
         setAuthenticated(true);
       } catch (error) {
-        // console.error("User is NOT authenticated", error);
         setAuthenticated(false);
       }
     };
 
-    // Run once on load
+    // run immediately on load
     checkValidation();
-    
-    if(authenticated == true){
 
-      intervalId = setInterval(() => {
-        checkValidation();
-      }, 300000);
-       
+    // keep session alive every 5 mins only if logged in
+    if (authenticated) {
+      intervalId = setInterval(checkValidation, 300000);
     }
 
     return () => clearInterval(intervalId);
   }, [authenticated]);
 
+  useEffect(() => {
+    if (!authenticated) return;
+    handleGetAllImages();
+  }, [authenticated,active.Gallery]);
 
   return (
-    <GlobalContext.Provider value={{ authenticated, setAuthenticated,loginStatus,setLoginStatus ,active,setActive , mode,setMode , profileImage , imageUrl, setImageUrl }}>
+    <GlobalContext.Provider
+      value={{
+        authenticated,
+        setAuthenticated,
+        loginStatus,
+        setLoginStatus,
+        active,
+        setActive,
+        mode,
+        setMode,
+        profileImage,
+        imageUrl,
+        setImageUrl,
+        images,
+        setImages,
+        handleGetAllImages,
+      }}
+    >
       {children}
     </GlobalContext.Provider>
   );
